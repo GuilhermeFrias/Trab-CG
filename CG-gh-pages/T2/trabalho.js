@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import KeyboardState from '../libs/util/KeyboardState.js'
 import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
+import { OBJLoader } from '../build/jsm/loaders/OBJLoader.js';
 import {
     initRenderer,
     initDefaultBasicLight,
@@ -12,6 +13,12 @@ import { TextGeometry } from '../build/jsm/geometries/TextGeometry.js';
 
 
 let colisions = [];
+let block_colisions = [];
+let key_collisions = [];
+
+let door_collisions = []
+let door_triggers = []
+
 
 let scene, renderer, material, light;
 scene = new THREE.Scene();
@@ -29,7 +36,7 @@ let groundMaterialDecoration = setDefaultMaterial('rgb(61,18,3)');
 let groundMaterialGreen = setDefaultMaterial('#466D1D');
 let groundMaterialRed = setDefaultMaterial('#610C04');
 let groundMaterialBlue = setDefaultMaterial('#3151E3D');
-let groundMaterialGrey = setDefaultMaterial('#2C3E4C');
+let groundMaterialGrey = setDefaultMaterial(0x45AFF);
 
 let invisibleColor = 0xFFFFFF;
 
@@ -42,6 +49,14 @@ let collisionMaterial = new THREE.MeshPhongMaterial({
 var man = null;
 var mixer = new Array();
 var textVisible = false;
+
+//keys Controller
+var hasBlueKey = false
+var hasRedKey = false
+var hasYellowKey = false
+
+let doors = []
+let keys = []
 
 // create a characterBox
 let cubeGeometry = new THREE.BoxGeometry(0.0002, 2, 0.0002);
@@ -179,35 +194,34 @@ function createArch(size) {
 let block = new THREE.BoxGeometry(1, 1, 1);
 let decoration = new THREE.BoxGeometry(0.9, 1.1, 0.9);
 
-function createTile(x, y, z, c, collor) {
+function createTile(x, y, z, c, color) {
     if (c == 0 || c == 2) {
         let tile = new THREE.Mesh(block, groundMaterialDecoration);
         let decoration1 = new THREE.Mesh(decoration, groundMaterial);
         let decoration2 = new THREE.Mesh(decoration, groundMaterial);
         let decoration3 = new THREE.Mesh(decoration, groundMaterial);
 
-
-        if (collor == 1) {
-            decoration1.material = groundMaterialGreen;
-            decoration2.material = groundMaterialGreen;
-            decoration3.material = groundMaterialGreen;
-        }
-
-        else if (collor == 2) {
-            decoration1.material = groundMaterialBlue;
-            decoration2.material = groundMaterialBlue;
-            decoration3.material = groundMaterialBlue;
-        }
-        else if (collor == 3) {
-            decoration1.material = groundMaterialGrey;
-            decoration2.material = groundMaterialGrey;
-            decoration3.material = groundMaterialGrey;
-        }
-
-        else if (collor == 4) {
-            decoration1.material = groundMaterialRed;
-            decoration2.material = groundMaterialRed;
-            decoration3.material = groundMaterialRed;
+        switch (color) {
+            case 1:
+                decoration1.material = groundMaterialGreen;
+                decoration2.material = groundMaterialGreen;
+                decoration3.material = groundMaterialGreen;
+                break;
+            case 2:
+                decoration1.material = groundMaterialBlue;
+                decoration2.material = groundMaterialBlue;
+                decoration3.material = groundMaterialBlue;
+                break;
+            case 3:
+                decoration1.material = groundMaterialGrey;
+                decoration2.material = groundMaterialGrey;
+                decoration3.material = groundMaterialGrey;
+                break;
+            case 4:
+                decoration1.material = groundMaterialRed;
+                decoration2.material = groundMaterialRed;
+                decoration3.material = groundMaterialRed;
+                break;
         }
 
 
@@ -220,23 +234,32 @@ function createTile(x, y, z, c, collor) {
         decoration3.rotateX(THREE.MathUtils.degToRad(90));
         tile.add(decoration3);
 
-        let cubeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        cubeBB.setFromObject(tile);
-
-        return cubeBB;
+        return setColision(tile)
     }
     else {
         let tile = new THREE.Mesh(block, tileMaterial);
         tile.position.set(x, y, z);
         scene.add(tile);
-        let cubeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        cubeBB.setFromObject(tile);
 
-        return cubeBB;
+        return setColision(tile)
     }
 }
 //adiciona os blocos criados a um vetor de colisoes
 
+function createBlock(x, y, z) {
+    let interactable_block = new THREE.Mesh(block, tileMaterial);
+    interactable_block.position.set(x, y, z);
+    scene.add(interactable_block);
+
+    return setColision(interactable_block)
+}
+
+function setColision(obj) {
+    let cubeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    cubeBB.setFromObject(obj);
+
+    return cubeBB;
+}
 let max = 52;
 
 createArch(52);
@@ -268,6 +291,28 @@ for (var i = 0; i < max; i++) {
     if (!(i >= ((max / 2) - 2) && i < ((max / 2) + 3)))//porta
         colisions.push(createTile((max / 2) - 1, 0.5, i - (max / 2), 0));
 }
+
+//criação das portas
+let porta_mesh = new THREE.BoxGeometry(5, 9.5, 0.8);
+let porta_trigger = new THREE.BoxGeometry(5, 9.5, 6);
+let porta = new THREE.Mesh(porta_mesh, groundMaterialGrey);
+let porta_trigger_obj = new THREE.Mesh(porta_trigger, collisionMaterial)
+//posições
+porta_trigger_obj.position.set(0, 4.75, 25)
+porta.position.set(0, 4.75, 25);
+//colisoes
+let col1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+col1.setFromObject(porta);
+let trigger1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+trigger1.setFromObject(porta_trigger_obj);
+//adiciona na cena
+scene.add(porta_trigger_obj)
+scene.add(porta)
+//adiciona a colisão no array de colisoes
+door_collisions.push(col1)
+door_triggers.push(trigger1)
+doors.push(porta)
+
 //=============================================================================================================================//
 
 
@@ -302,9 +347,20 @@ for (var i = 0; i < 38; i++) {
 
 for (var i = 0; i < 11; i++) {
     for (var j = 0; j < 14; j++) {
-        colisions.push(createTile(i - 5, -2.5, -87 + j, 0, 1));
+        colisions.push(createTile(i - 5, -2.5, -85 + j, 0, 1));
     }
 }
+
+block_colisions.push(createBlock(6, -1.5, -43));
+block_colisions.push(createBlock(-4, -1.5, -56));
+block_colisions.push(createBlock(-3, -1.5, -45));
+block_colisions.push(createBlock(-7, -1.5, -47));
+block_colisions.push(createBlock(4, -1.5, -50));
+block_colisions.push(createBlock(7, -1.5, -60));
+
+//ponte
+//positions: y = -2,5; x e z: (0,-69), (1,-69), (0,-70), (1,-70), (0,-71), (1,-71)
+var posicionados = new Array(6).fill(false)
 
 
 //=============================================================================================================================//
@@ -450,7 +506,7 @@ cameraHolder2.rotateX(-0.79);
 //========================================================================================================//
 //*******************************Sistema de Colisão e Seleção de Objetsos******************************** */
 let collisionGeometry = new THREE.BoxGeometry(0.1, 0.2, 0.5);
-let collisionGeometryGravity = new THREE.BoxGeometry(0.001, 3, 0.001);
+let collisionGeometryGravity = new THREE.BoxGeometry(0.001, 2.3, 0.001);
 
 
 let collision1 = new THREE.Mesh(collisionGeometry, collisionMaterial);
@@ -510,7 +566,42 @@ function checkCollisions() {
         if (colisions[i].intersectsBox(W1BB)) { offW = false; }
         if (colisions[i].intersectsBox(G1BB)) { fall = fall + 1; }
     }
-    console.log(fall);
+    for (var i = 0; i < door_collisions.length; i++) {
+        if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
+        if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
+        if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
+        if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
+    }
+    for (var i = 0; i < block_colisions.length; i++) {
+        if (block_colisions[i].intersectsBox(D1BB)) { offD = false; }
+        if (block_colisions[i].intersectsBox(S1BB)) { offS = false; }
+        if (block_colisions[i].intersectsBox(A1BB)) { offA = false; }
+        if (block_colisions[i].intersectsBox(W1BB)) { offW = false; }
+    }
+    //console.log(fall);
+
+    for (var i = 0; i < key_collisions.length; i++) {
+        if (key_collisions[i].intersectsBox(D1BB) || key_collisions[i].intersectsBox(S1BB) || key_collisions[i].intersectsBox(A1BB)) {
+            switch (i) {
+                case 0:
+                    hasBlueKey = true;
+                    keys[0].position.set(1000, 0, 0)
+                case 1:
+                    hasRedKey = true
+                case 2:
+                    hasYellowKey = true
+            }
+        }
+    }
+
+    for (var i = 0; i < door_triggers.length; i++) {
+        if (door_triggers[i].intersectsBox(D1BB) || door_triggers[i].intersectsBox(S1BB) || door_triggers[i].intersectsBox(A1BB)) {
+            if (i == 0 && hasBlueKey) {
+                const posTarget = new THREE.Vector3(0, -4.75, 25)
+                doors[0].position.lerp(posTarget, 0.1)
+            }
+        }
+    }
 
     if (jump) {
         characterBox.translateY(0.1);
@@ -528,9 +619,24 @@ function cair() {
 
 
 
+
 //Detecta clicks nos blocos clicáveis
 const raycaster = new THREE.Raycaster();
 const clickMouse = new THREE.Vector2();
+
+var carregando_obj = false;
+var objeto_carregado;
+
+var v = new THREE.Vector3(0, 0, 0);
+console.log(v)
+
+function createBridge(x, z, index) {
+    posicionados[index] = true
+    objeto_carregado.position.set(x, -2.5, z)
+    objeto_carregado.material = groundMaterial
+    colisions.push(setColision(objeto_carregado))
+}
+
 
 window.addEventListener('click', Event => {
     clickMouse.x = (Event.clientX / window.innerWidth) * 2 - 1;
@@ -540,10 +646,62 @@ window.addEventListener('click', Event => {
     const found = raycaster.intersectObject(scene);
 
     if (found[0] != null && (found[0].object.material == tileMaterial || found[0].object.material == tileMaterialSelected)) {
-        if (found[0].object.material == tileMaterial)
-            found[0].object.material = tileMaterialSelected;
-        else
-            found[0].object.material = tileMaterial;
+        objeto_carregado = found[0].object;
+        var dist = characterBox.position.distanceTo(objeto_carregado.position);
+        if (objeto_carregado.material == tileMaterial && !carregando_obj && dist < 4) {
+            carregando_obj = true
+
+            objeto_carregado.material = tileMaterialSelected;
+            objeto_carregado.position.set(0, 1, -2);
+            characterBox.add(objeto_carregado)
+            objeto_carregado.getWorldPosition(v);
+
+        }
+        else if (carregando_obj) {
+            carregando_obj = false
+            objeto_carregado.material = tileMaterial;
+            objeto_carregado.getWorldPosition(v);
+            scene.add(objeto_carregado)
+
+            objeto_carregado.position.set(Math.round(v.x), Math.round(v.y), Math.round(v.z))
+            console.log(objeto_carregado.position)
+
+            //verifica ponte
+            if ((Math.round(v.x) < 3 || Math.round(v.x) > -3) && Math.round(v.z) > -72) {
+                if (Math.round(v.z) == -69 && !posicionados[0]) {
+                    createBridge(0, -69, 0)
+                }
+                else if (Math.round(v.z) == -69 && !posicionados[1]) {
+                    createBridge(-1, -69, 1)
+                }
+                else if (Math.round(v.z) == -70 && !posicionados[2]) {
+                    createBridge(0, -70, 2)
+                }
+                else if (Math.round(v.z) == -70 && !posicionados[3]) {
+                    createBridge(-1, -70, 3)
+                }
+                else if (Math.round(v.z) == -71 && !posicionados[4]) {
+                    createBridge(0, -71, 4)
+                }
+                else if (Math.round(v.z) == -71 && !posicionados[5]) {
+                    createBridge(-1, -71, 5)
+                }
+                else
+                    var x = Math.round(v.x)
+                var y = Math.round(v.y)
+                var z = Math.round(v.z)
+                var target = new THREE.Vector3(x, y, z);
+                objeto_carregado.position.lerp(target, 0.01)
+            }
+            else {
+                var x = Math.round(v.x)
+                var y = Math.round(v.y)
+                var z = Math.round(v.z)
+                var target = new THREE.Vector3(x, y, z);
+                objeto_carregado.position.lerp(target, 0.1)
+            }
+
+        }
     }
 });
 //*********************************************************************************************************/
@@ -592,6 +750,40 @@ function onProgress(xhr, model) {
         var percentComplete = xhr.loaded / xhr.total * 100;
     }
 }
+
+// instantiate a loader
+const loader = new OBJLoader();
+
+loadKey(0, -1.5, -78, 0x45AFF)//blue
+loadKey(0, 2.5, 75, 0xF12323)//red
+loadKey(86, -1.5, 0, 0xFFE53F)//yellow
+
+function loadKey(x, y, z, color) {
+    loader.load(
+        '../T2/key.obj',
+        function (object) {
+            object.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.material.color.setHex(color);
+                }
+            });
+            object.scale.set(0.01, 0.01, 0.01) //XD
+            object.position.set(x, y, z)
+            let col = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+            col.setFromObject(object);
+            scene.add(object);
+            keys.push(object);
+            key_collisions.push(col)
+        },
+        function (xhr) {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        },
+        function (error) {
+            console.log('An error happened');
+        }
+    );
+}
+
 //==========================================================================================================//
 //==========================================================================================================//
 
