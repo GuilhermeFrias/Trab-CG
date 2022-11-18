@@ -297,6 +297,7 @@ function createTile(x, y, z, c, color) {
 function createBlock(x, y, z) {
     let interactable_block = new THREE.Mesh(block, tileMaterial);
     interactable_block.position.set(x, y, z);
+    interactable_block.castShadow = true
     scene.add(interactable_block);
 
     return setColision(interactable_block)
@@ -673,8 +674,10 @@ function checkCollisions() {
                     keys[0].position.set(1000, 0, 0)
                 case 1:
                     hasRedKey = true
+                    keys[1].position.set(1000,0,0)
                 case 2:
                     hasYellowKey = true
+                    keys[2].position.set(1000,0,0)
             }
         }
     }
@@ -684,6 +687,7 @@ function checkCollisions() {
             if (i == 0 && hasBlueKey) {
                 const posTarget = new THREE.Vector3(0, -4.75, 25)
                 doors[0].position.lerp(posTarget, 0.1)
+                door_collisions.pop(0);
             }
         }
     }
@@ -747,9 +751,6 @@ window.addEventListener('click', Event => {
             objeto_carregado.getWorldPosition(v);
             scene.add(objeto_carregado)
 
-            objeto_carregado.position.set(Math.round(v.x), Math.round(v.y), Math.round(v.z))
-            console.log(objeto_carregado.position)
-
             //verifica ponte
             if ((Math.round(v.x) < 3 || Math.round(v.x) > -3) && Math.round(v.z) > -72) {
                 if (Math.round(v.z) == -69 && !posicionados[0]) {
@@ -771,18 +772,10 @@ window.addEventListener('click', Event => {
                     createBridge(-1, -71, 5)
                 }
                 else
-                    var x = Math.round(v.x)
-                var y = Math.round(v.y)
-                var z = Math.round(v.z)
-                var target = new THREE.Vector3(x, y, z);
-                objeto_carregado.position.lerp(target, 0.01)
+                    objeto_carregado.position.set(Math.round(v.x), -1.5, Math.round(v.z))
             }
             else {
-                var x = Math.round(v.x)
-                var y = Math.round(v.y)
-                var z = Math.round(v.z)
-                var target = new THREE.Vector3(x, y, z);
-                objeto_carregado.position.lerp(target, 0.1)
+                objeto_carregado.position.set(Math.round(v.x), -1.5, Math.round(v.z))
             }
 
         }
