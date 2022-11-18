@@ -61,9 +61,11 @@ let groundMaterial = setDefaultMaterial('rgb(220,195,156,254)');
 let groundMaterialDecoration = setDefaultMaterial('rgb(61,18,3)');
 
 let groundMaterialGreen = setDefaultMaterial('#466D1D');
-let groundMaterialRed = setDefaultMaterial('#610C04');
+let groundMaterialRed = setDefaultMaterial(0xF12323);
 let groundMaterialBlue = setDefaultMaterial('#3151E3D');
-let groundMaterialGrey = setDefaultMaterial('#2C3E4C');
+let groundMaterialGrey = setDefaultMaterial(0x45AFF);
+
+let yellowMaterial = setDefaultMaterial(0xFFE53F)
 
 let invisibleColor = 0xFFFFFF;
 
@@ -341,26 +343,33 @@ for (var i = 0; i < max; i++) {
         colisions.push(createTile((max / 2) - 1, 0.5, i - (max / 2), 0));
 }
 
-//criação das portas
-let porta_mesh = new THREE.BoxGeometry(5, 9.5, 0.8);
-let porta_trigger = new THREE.BoxGeometry(5, 9.5, 6);
-let porta = new THREE.Mesh(porta_mesh, groundMaterialGrey);
-let porta_trigger_obj = new THREE.Mesh(porta_trigger, collisionMaterial)
-//posições
-porta_trigger_obj.position.set(0, 4.75, 25)
-porta.position.set(0, 4.75, 25);
-//colisoes
-let col1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-col1.setFromObject(porta);
-let trigger1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-trigger1.setFromObject(porta_trigger_obj);
-//adiciona na cena
-scene.add(porta_trigger_obj)
-scene.add(porta)
-//adiciona a colisão no array de colisoes
-door_collisions.push(col1)
-door_triggers.push(trigger1)
-doors.push(porta)
+createPorta(5,0.8, 0, 4.75, 25, groundMaterialGrey)
+createPorta(0.8, 5, -25.98, 4.75, 0, yellowMaterial)
+createPorta(0.8, 5, 25, 4.75, 0, groundMaterialRed)
+
+function createPorta(scaleX, scaleZ, x,y,z, material){
+    //criação das portas
+    let porta_mesh = new THREE.BoxGeometry(scaleX, 9.5, scaleZ);
+    let porta_trigger = new THREE.BoxGeometry(scaleX, 9.5, scaleZ * 10);
+    let porta = new THREE.Mesh(porta_mesh, material);
+    porta.castShadow = true
+    let porta_trigger_obj = new THREE.Mesh(porta_trigger, collisionMaterial)
+    //posições
+    porta_trigger_obj.position.set(x, y, z)
+    porta.position.set(x, y, z);
+    //colisoes
+    let col1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    col1.setFromObject(porta);
+    let trigger1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    trigger1.setFromObject(porta_trigger_obj);
+    //adiciona na cena
+    scene.add(porta_trigger_obj)
+    scene.add(porta)
+    //adiciona a colisão no array de colisoes
+    door_collisions.push(col1)
+    door_triggers.push(trigger1)
+    doors.push(porta)
+}
 
 //=============================================================================================================================//
 
@@ -671,13 +680,13 @@ function checkCollisions() {
             switch (i) {
                 case 0:
                     hasBlueKey = true;
-                    keys[0].position.set(1000, 0, 0)
+                    //keys[0].position.set(1000, 0, 0)
                 case 1:
                     hasRedKey = true
-                    keys[1].position.set(1000,0,0)
+                    //keys[1].position.set(1000,0,0)
                 case 2:
                     hasYellowKey = true
-                    keys[2].position.set(1000,0,0)
+                    //keys[2].position.set(1000,0,0)
             }
         }
     }
@@ -771,11 +780,13 @@ window.addEventListener('click', Event => {
                 else if (Math.round(v.z) == -71 && !posicionados[5]) {
                     createBridge(-1, -71, 5)
                 }
-                else
-                    objeto_carregado.position.set(Math.round(v.x), -1.5, Math.round(v.z))
+                else{
+                    objeto_carregado.position.set(Math.round(v.x), Math.round(v.y) - 1.5, Math.round(v.z))
+                }
+
             }
             else {
-                objeto_carregado.position.set(Math.round(v.x), -1.5, Math.round(v.z))
+                objeto_carregado.position.set(Math.round(v.x),  Math.round(v.y) - 1.5, Math.round(v.z))
             }
 
         }
