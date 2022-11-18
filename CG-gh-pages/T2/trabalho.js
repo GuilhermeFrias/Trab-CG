@@ -4,8 +4,8 @@ import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from '../build/jsm/loaders/OBJLoader.js';
 import {
     initRenderer,
-    initDefaultBasicLight,
     setDefaultMaterial,
+    createLightSphere,
 } from "../libs/util/util.js";
 import { CSG } from '../libs/other/CSGMesh.js'
 import { FontLoader } from '../build/jsm/loaders/FontLoader.js';
@@ -20,11 +20,38 @@ let door_collisions = []
 let door_triggers = []
 
 
-let scene, renderer, material, light;
+let scene, renderer, material;
 scene = new THREE.Scene();
 renderer = initRenderer();
+let ambLight = new THREE.AmbientLight("rgb(255,255,255)");
+ambLight.intensity = 0.5;
+scene.add(ambLight);
 material = setDefaultMaterial();
-light = initDefaultBasicLight(scene);
+var lightPosition = new THREE.Vector3(-30, 30, 30);
+
+var d = 100;
+
+var dirLight = new THREE.DirectionalLight("rgb(255,255,255)");
+dirLight.position.copy(lightPosition);
+dirLight.castShadow = true;
+// Shadow Parameters
+dirLight.shadow.mapSize.width = 4096;
+dirLight.shadow.mapSize.height = 4096;
+dirLight.shadow.camera.near = .01;
+dirLight.shadow.camera.far = 100;
+dirLight.shadow.camera.left = d;
+dirLight.shadow.camera.right = -d;
+dirLight.shadow.camera.bottom = d;
+dirLight.shadow.camera.top = -d;
+dirLight.shadow.bias = -0.0005;
+dirLight.intensity = 0.4;
+
+dirLight.shadow.radius = 0.8;
+
+scene.add(dirLight);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 var keyboard = new KeyboardState();
 let clock = new THREE.Clock();
 
@@ -36,7 +63,7 @@ let groundMaterialDecoration = setDefaultMaterial('rgb(61,18,3)');
 let groundMaterialGreen = setDefaultMaterial('#466D1D');
 let groundMaterialRed = setDefaultMaterial('#610C04');
 let groundMaterialBlue = setDefaultMaterial('#3151E3D');
-let groundMaterialGrey = setDefaultMaterial(0x45AFF);
+let groundMaterialGrey = setDefaultMaterial('#2C3E4C');
 
 let invisibleColor = 0xFFFFFF;
 
@@ -94,10 +121,12 @@ function endGame() {
 function createStairs(size) {
 
     let degrau = new THREE.BoxGeometry(5.2, 0.2, 0.8);
+
     for (var i = 1; i < 10; i++) {
 
 
         let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
 
         degrau1.position.set(0, 0.2 * i, 25.5 + (i * 0.5));
         scene.add(degrau1);
@@ -110,6 +139,7 @@ function createStairs(size) {
 
 
         let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
 
         degrau1.position.set(0, -0.2 * i, -(26.5 + (i * 0.5)));
         scene.add(degrau1);
@@ -121,6 +151,8 @@ function createStairs(size) {
     for (var i = 1; i < 10; i++) {
 
         let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
+
         degrau1.rotateY(1.5708);
         degrau1.position.set((25.5 + (i * 0.5)), -0.2 * i, 0);
         scene.add(degrau1);
@@ -132,6 +164,8 @@ function createStairs(size) {
     for (var i = 1; i < 10; i++) {
 
         let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
+
         degrau1.position.set(-(25.5 + (i * 0.5)), 0.2 * i, 0);
         degrau1.rotateY(1.5708);
         scene.add(degrau1);
@@ -175,12 +209,21 @@ function createArch(size) {
 
     arch1.position.set(0, 5, (size / 2) - 1);
     arch2.position.set(0, 5, -(size / 2));
-
     arch3.position.set((size / 2) - 1, 5, 0);
     arch4.position.set(-(size / 2), 5, 0);
 
     arch3.rotateY(1.5708);
     arch4.rotateY(1.5708);
+
+
+    arch1.castShadow = true;
+    arch1.receiveShadow = true;
+    arch2.castShadow = true;
+    arch2.receiveShadow = true;
+    arch3.castShadow = true;
+    arch3.receiveShadow = true;
+    arch4.castShadow = true;
+    arch4.receiveShadow = true;
 
     scene.add(arch1);
     scene.add(arch2);
@@ -197,9 +240,14 @@ let decoration = new THREE.BoxGeometry(0.9, 1.1, 0.9);
 function createTile(x, y, z, c, color) {
     if (c == 0 || c == 2) {
         let tile = new THREE.Mesh(block, groundMaterialDecoration);
+        tile.castShadow = true;
+
         let decoration1 = new THREE.Mesh(decoration, groundMaterial);
+        decoration1.receiveShadow = true;
         let decoration2 = new THREE.Mesh(decoration, groundMaterial);
+        decoration2.receiveShadow = true;
         let decoration3 = new THREE.Mesh(decoration, groundMaterial);
+        decoration3.receiveShadow = true;
 
         switch (color) {
             case 1:
@@ -359,8 +407,23 @@ block_colisions.push(createBlock(4, -1.5, -50));
 block_colisions.push(createBlock(7, -1.5, -60));
 
 //ponte
-//positions: y = -2,5; x e z: (0,-69), (1,-69), (0,-70), (1,-70), (0,-71), (1,-71)
+
 var posicionados = new Array(6).fill(false)
+// wals
+for (var i = 0; i < 11; i++) {
+    colisions.push(createTile(i - 5, -1.5, -85, 0, 1));
+}
+for (var i = 0; i < 14; i++) {
+    colisions.push(createTile(-5, -1.5, -85 + i, 0, 1));
+}
+
+for (var i = 0; i < 14; i++) {
+    colisions.push(createTile(5, -1.5, -85 + i, 0, 1));
+}
+
+for (var i = 0; i < 3; i++) {
+    colisions.push(createTile(2, -1.5, -70 + i, 0, 1));
+}
 
 
 //=============================================================================================================================//
@@ -396,10 +459,21 @@ for (var i = 0; i < 38; i++) {
 
 for (var i = 0; i < 11; i++) {
     for (var j = 0; j < 14; j++) {
-        colisions.push(createTile(i - 5, 1.5, 69 + j, 0, 1));
+        colisions.push(createTile(i - 5, 1.5, 69 + j, 0, 2));
     }
 }
 
+// walls 
+for (var i = 0; i < 11; i++) {
+    colisions.push(createTile(i - 5, 2.5, 82, 0, 2));
+}
+for (var i = 0; i < 14; i++) {
+    colisions.push(createTile(-5, 2.5, 69 + i, 0, 2));
+}
+
+for (var i = 0; i < 14; i++) {
+    colisions.push(createTile(5, 2.5, 69 + i, 0, 2));
+}
 
 //=============================================================================================================================//
 
@@ -440,7 +514,18 @@ for (var i = 0; i < 14; i++) {
     }
 }
 
+
 //walls
+for (var i = 0; i < 14; i++) {
+    colisions.push(createTile(i + 80, -1.5, -5, 0, 3));
+}
+for (var i = 0; i < 14; i++) {
+    colisions.push(createTile(i + 80, -1.5, +5, 0, 3));
+}
+
+for (var i = 0; i < 9; i++) {
+    colisions.push(createTile(93, -1.5, -4 + i, 0, 3));
+}
 
 
 //=============================================================================================================================//
@@ -616,7 +701,6 @@ function checkCollisions() {
 function cair() {
     characterBox.translateY(-0.1);
 }
-
 
 
 
@@ -832,8 +916,9 @@ function keyboardUpdate() {
         characterBox.translateX(-moveDistance);
         partialDegree = partialDegree + 270;
         pressedKeys++;
+    }
 
-    } else if ((keyboard.pressed("D") || keyboard.pressed("right")) && offD && (keyboard.pressed("W") || keyboard.pressed("up")) && offW) {
+    else if ((keyboard.pressed("D") || keyboard.pressed("right")) && offD && (keyboard.pressed("W") || keyboard.pressed("up")) && offW) {
         characterBox.translateZ(-moveDistance);
         partialDegree = partialDegree + 180;
         pressedKeys++;
@@ -886,15 +971,17 @@ function keyboardUpdate() {
         for (var i = 0; i < mixer.length; i++)
             mixer[i].update(moveDistance / 5);
         target = partialDegree;
+        if (target != degreeAtt) {
+            ratationAnimation();
+        }
     }
-    if (target != degreeAtt) {
-        ratationAnimation();
-    }
+
 
     offD = true;
     offS = true;
     offA = true;
     offW = true;
+
 }
 
 //Rotation Handler
