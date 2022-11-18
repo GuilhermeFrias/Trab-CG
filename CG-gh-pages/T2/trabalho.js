@@ -84,6 +84,10 @@ var hasBlueKey = false
 var hasRedKey = false
 var hasYellowKey = false
 
+var blueOpened = false
+var redOpened = false
+var yellowOpened = false
+
 let doors = []
 let keys = []
 
@@ -138,8 +142,6 @@ function createStairs(size) {
     }
 
     for (var i = 1; i < 10; i++) {
-
-
         let degrau1 = new THREE.Mesh(degrau, groundMaterial);
         degrau1.receiveShadow = true;
 
@@ -677,16 +679,17 @@ function checkCollisions() {
 
     for (var i = 0; i < key_collisions.length; i++) {
         if (key_collisions[i].intersectsBox(D1BB) || key_collisions[i].intersectsBox(S1BB) || key_collisions[i].intersectsBox(A1BB)) {
-            switch (i) {
-                case 0:
-                    hasBlueKey = true;
-                    //keys[0].position.set(1000, 0, 0)
-                case 1:
-                    hasRedKey = true
-                    //keys[1].position.set(1000,0,0)
-                case 2:
-                    hasYellowKey = true
-                    //keys[2].position.set(1000,0,0)
+            if (i == 0) {
+                hasBlueKey = true
+                keys[0].position.set(1000,0,0)
+            }
+            if (i == 1) {
+                hasRedKey = true
+                keys[1].position.set(1000,0,0)
+            }
+            if (i == 2) {
+                hasYellowKey = true
+                keys[2].position.set(1000,0,0)
             }
         }
     }
@@ -696,8 +699,18 @@ function checkCollisions() {
             if (i == 0 && hasBlueKey) {
                 const posTarget = new THREE.Vector3(0, -4.75, 25)
                 doors[0].position.lerp(posTarget, 0.1)
-                door_collisions.pop(0);
+                setTimeout(() => {  hasBlueKey = false; door_collisions.pop();}, 2000);
             }
+            if (i == 0 && hasRedKey && !redOpened) {
+                const posTarget = new THREE.Vector3(25, -4.75, 0)
+                doors[2].position.lerp(posTarget, 0.1)
+                setTimeout(() => {  redOpened = true; door_collisions.pop();}, 2000);
+            }
+            if (i == 0 && hasYellowKey && !yellowOpened) {
+                const posTarget = new THREE.Vector3(-25.98, -4.75, 0)
+                doors[1].position.lerp(posTarget, 0.1)
+                setTimeout(() => {  yellowOpened = true; door_collisions.pop();}, 2000);
+            } //colisoes sumindo todas e ainda é necessario remover os triggers
         }
     }
 
