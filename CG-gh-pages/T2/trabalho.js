@@ -41,6 +41,7 @@ let collisionMaterial = new THREE.MeshPhongMaterial({
 });
 var man = null;
 var mixer = new Array();
+var textVisible = false;
 
 // create a characterBox
 let cubeGeometry = new THREE.BoxGeometry(0.0002, 2, 0.0002);
@@ -48,20 +49,27 @@ let characterBox = new THREE.Mesh(cubeGeometry, collisionMaterial);
 characterBox.position.set(0.0, 3, 0.0);
 scene.add(characterBox);
 
-const loader = new FontLoader();
-loader.load('../libs/util/snow_Candy_Regular.json', (font) => {
-    const textGeometry = new TextGeometry('Hello World', {
-        height: 2,
-        size: 10,
-        font: font,
-    });
-    const textMaterial = new THREE.MeshNormalMaterial();
-    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-    textMesh.position.x = -36;
-    textMesh.position.y = 5;
-    scene.add(textMesh);
-});
+function endGame() {
 
+    const loader = new FontLoader();
+    loader.load('../T2/snow_Candy_Regular.json', (font) => {
+        const textGeometry = new TextGeometry('        Parabéns!\n Você Concluiu todos\n        os Puzzles!', {
+            height: 0.5,
+            size: 1,
+            font: font,
+        });
+        const textMaterial = new THREE.MeshNormalMaterial();
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        textMesh.position.x = -42;
+        textMesh.position.y = 8;
+        textMesh.position.z = 5
+        textMesh.rotateY(.7854);
+        scene.add(textMesh);
+        textVisible = true;
+
+    });
+
+}
 
 
 //========================================================================================================//
@@ -387,6 +395,12 @@ for (var i = 0; i < 14; i++) {
 for (var i = 0; i < 10; i++) {
     for (var j = 0; j < 11; j++) {
         colisions.push(createTile(i - 40, 1.5, j - 5, 0, 4));
+    }
+}
+
+for (var i = 0; i < 2; i++) {
+    for (var j = 0; j < 2; j++) {
+        colisions.push(createTile(i - 36, 1.75, j - 1, 0, 2))
     }
 }
 
@@ -731,7 +745,14 @@ function render() {
     G1BB.copy(collisionGround.geometry.boundingBox).applyMatrix4(collisionGround.matrixWorld);
 
     checkCollisions();
+    if (characterBox.position.y >= 3.25 && textVisible == false) {
+
+        endGame();
+    }
     requestAnimationFrame(render);
-    keyboardUpdate();
+    if (!textVisible) {
+        keyboardUpdate();
+
+    }
     renderer.render(scene, camera);
 }
