@@ -635,6 +635,9 @@ for (var i = 0; i < 4; i++) {
     spotlight.position.set(46 + i * 9, 0.5, 8.5);;
     spotlight.target.position.set(46 + i * 9, -1.5, 8.5);;
     spotlight.target.updateMatrixWorld();
+
+    spotlight.penumbra = .2;
+
     scene.add(spotlight);
     spotlights.push(spotlight);
 }
@@ -644,6 +647,9 @@ for (var i = 0; i < 4; i++) {
     spotlight.position.set(46 + i * 9, 0.5, -7.5);;
     spotlight.target.position.set(46 + i * 9, -1.5, -7.5);;
     spotlight.target.updateMatrixWorld();
+
+    spotlight.penumbra = 0.2;
+
     scene.add(spotlight);
     spotlights.push(spotlight);
 }
@@ -823,12 +829,12 @@ function checkCollisions() {
         if (colisions[i].intersectsBox(W1BB)) { offW = false; }
         if (colisions[i].intersectsBox(G1BB)) { fall = fall + 1; }
     }
-    for (var i = 0; i < door_collisions.length; i++) {
-        if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
-        if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
-        if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
-        if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
-    }
+    // for (var i = 0; i < door_collisions.length; i++) {
+    //     if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
+    //     if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
+    //     if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
+    //     if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
+    // }
     for (var i = 0; i < block_colisions.length; i++) {
         if (block_colisions[i].intersectsBox(D1BB)) { offD = false; }
         if (block_colisions[i].intersectsBox(S1BB)) { offS = false; }
