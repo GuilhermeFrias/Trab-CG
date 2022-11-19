@@ -87,10 +87,6 @@ var hasBlueKey = false
 var hasRedKey = false
 var hasYellowKey = false
 
-var blueOpened = false
-var redOpened = false
-var yellowOpened = false
-
 let doors = []
 let keys = []
 
@@ -823,12 +819,12 @@ function checkCollisions() {
         if (colisions[i].intersectsBox(W1BB)) { offW = false; }
         if (colisions[i].intersectsBox(G1BB)) { fall = fall + 1; }
     }
-    // for (var i = 0; i < door_collisions.length; i++) {
-    //     if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
-    //     if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
-    //     if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
-    //     if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
-    // }
+    for (var i = 0; i < door_collisions.length; i++) {
+        if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
+        if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
+        if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
+        if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
+    }
     for (var i = 0; i < block_colisions.length; i++) {
         if (block_colisions[i].intersectsBox(D1BB)) { offD = false; }
         if (block_colisions[i].intersectsBox(S1BB)) { offS = false; }
@@ -859,18 +855,24 @@ function checkCollisions() {
             if (i == 0 && hasBlueKey) {
                 const posTarget = new THREE.Vector3(0, -4.75, 25)
                 doors[0].position.lerp(posTarget, 0.1)
-                setTimeout(() => { hasBlueKey = false; door_collisions.pop(); }, 2000);
+                setTimeout(() => { hasBlueKey = false; 
+                    door_collisions[0].translate(new THREE.Vector3(1000,1000,1000));
+                    door_triggers[0].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
             }
-            if (i == 0 && hasRedKey && !redOpened) {
+            if (i == 2 && hasRedKey) {
                 const posTarget = new THREE.Vector3(25, -4.75, 0)
                 doors[2].position.lerp(posTarget, 0.1)
-                setTimeout(() => { redOpened = true; door_collisions.pop(); }, 2000);
+                setTimeout(() => { hasBlueKey = false; 
+                    door_collisions[2].translate(new THREE.Vector3(1000,1000,1000));
+                    door_triggers[2].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
             }
-            if (i == 0 && hasYellowKey && !yellowOpened) {
+            if (i == 1 && hasYellowKey) {
                 const posTarget = new THREE.Vector3(-25.98, -4.75, 0)
                 doors[1].position.lerp(posTarget, 0.1)
-                setTimeout(() => { yellowOpened = true; door_collisions.pop(); }, 2000);
-            } //colisoes sumindo todas e ainda é necessario remover os triggers
+                setTimeout(() => { hasBlueKey = false; 
+                    door_collisions[1].translate(new THREE.Vector3(1000,1000,1000));
+                    door_triggers[1].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
+            } 
         }
     }
 
