@@ -370,9 +370,13 @@ for (var i = 0; i < max; i++) {
         colisions.push(createTile((max / 2) - 1, 0.5, i - (max / 2), 0));
 }
 
-createPorta(5, 0.8, 0, 4.75, 25, groundMaterialGrey)
-createPorta(0.8, 5, -25.98, 4.75, 0, yellowMaterial)
-createPorta(0.8, 5, 25, 4.75, 0, groundMaterialRed)
+createPorta(5, 0.8, 0, 4.75, 25, groundMaterialGrey)//0
+createPorta(0.8, 5, -25.98, 4.75, 0, yellowMaterial)//1
+createPorta(0.8, 5, 25, 4.75, 0, groundMaterialRed)//2
+
+//portas dentro das areas
+createPorta(5, 0.8, 0, 4.75, 68, groundMaterialGrey)//3
+createPorta(0.8, 5, 79, 2.75, 0, groundMaterialRed)//4
 
 function createPorta(scaleX, scaleZ, x, y, z, material) {
     //criação das portas
@@ -873,6 +877,24 @@ function checkCollisions() {
                     door_collisions[1].translate(new THREE.Vector3(1000,1000,1000));
                     door_triggers[1].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
             } 
+            //*************************************************************************** */
+            //*************************************************************************** */
+            //AQUI ESTAO AS PORTAS DO PUZZLE, A PORTA DE ID 3 É A DO PUZZLE AZUL E A COM ID 4 É DO PUZZLE VERMELHO
+            if (i == 3/*&& CONDIÇÃO*/) {
+                const posTarget = new THREE.Vector3(0, -4.75, 68)
+                doors[3].position.lerp(posTarget, 0.1)
+                setTimeout(() => { hasBlueKey = false; 
+                    door_collisions[3].translate(new THREE.Vector3(1000,1000,1000));
+                    door_triggers[3].translate(new THREE.Vector3(1000,1000,1000)); }, 1200);
+            }
+            if (i == 4 /*&& CONDIÇÃO*/) {
+                const posTarget = new THREE.Vector3(79, -6.75, 0)
+                doors[4].position.lerp(posTarget, 0.1)
+                setTimeout(() => { hasBlueKey = false; 
+                    door_collisions[4].translate(new THREE.Vector3(1000,1000,1000));
+                    door_triggers[4].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
+            }
+
         }
     }
 
