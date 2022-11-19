@@ -503,6 +503,42 @@ for (var i = 0; i < 26; i++) {
     }
 }
 
+//obj
+
+blocks.push(createBlock(-8, 2.5, 40));
+let cube6 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube5.setFromObject(blocks[6]);
+block_colisions.push(cube6);
+
+blocks.push(createBlock(-3, 2.5, 50));
+let cube7 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube5.setFromObject(blocks[7]);
+block_colisions.push(cube7);
+
+blocks.push(createBlock(-1, 2.5, 45));
+let cube8 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube5.setFromObject(blocks[8]);
+block_colisions.push(cube8);
+
+blocks.push(createBlock(3, 2.5, 52));
+let cube9 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube5.setFromObject(blocks[9]);
+block_colisions.push(cube9);
+
+blocks.push(createBlock(5, 2.5, 55));
+let cube10 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube5.setFromObject(blocks[10]);
+block_colisions.push(cube10);
+
+blocks.push(createBlock(8, 2.5, 43));
+let cube11 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube5.setFromObject(blocks[11]);
+block_colisions.push(cube11);
+
+for (var i = 0; i <= 2; i++) {
+    colisions.push(createTile(-4 + i * 5, 1.75, 63, 0, 3));
+}
+
 //walls
 for (var i = 0; i < 26; i++) {
     if (!(i >= 9 && i <= 13))
@@ -621,6 +657,19 @@ for (var i = 0; i < 14; i++) {
     }
 }
 
+blocks.push(createBlock(64, -1.5, -7));
+let cube12 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube12.setFromObject(blocks[12]);
+block_colisions.push(cube12);
+
+blocks.push(createBlock(55, -1.5, 8));
+let cube13 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube13.setFromObject(blocks[13]);
+block_colisions.push(cube13);
+
+
+colisions.push(createTile(64, -2.25, 8, 0, 2));
+colisions.push(createTile(46, -2.25, -7, 0, 2));
 
 //walls
 for (var i = 0; i < 14; i++) {
@@ -761,12 +810,12 @@ function checkCollisions() {
         if (colisions[i].intersectsBox(W1BB)) { offW = false; }
         if (colisions[i].intersectsBox(G1BB)) { fall = fall + 1; }
     }
-    for (var i = 0; i < door_collisions.length; i++) {
-        if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
-        if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
-        if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
-        if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
-    }
+    // for (var i = 0; i < door_collisions.length; i++) {
+    //     if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
+    //     if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
+    //     if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
+    //     if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
+    // }
     for (var i = 0; i < block_colisions.length; i++) {
         if (block_colisions[i].intersectsBox(D1BB)) { offD = false; }
         if (block_colisions[i].intersectsBox(S1BB)) { offS = false; }
@@ -1185,7 +1234,7 @@ function render() {
     G1BB.copy(collisionGround.geometry.boundingBox).applyMatrix4(collisionGround.matrixWorld);
 
     checkCollisions();
-    if (characterBox.position.y >= 3.25 && textVisible == false) {
+    if (hasBlueKey && hasRedKey && hasYellowKey && textVisible == false) {
 
         endGame();
     }
