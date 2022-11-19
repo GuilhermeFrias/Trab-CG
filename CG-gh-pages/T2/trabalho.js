@@ -657,15 +657,18 @@ for (var i = 0; i < 14; i++) {
     }
 }
 
-blocks.push(createBlock(64, -1.5, -7));
+blocks.push(createBlock(55, -1.5, -7));
 let cube12 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 cube12.setFromObject(blocks[12]);
 block_colisions.push(cube12);
+blocks[12].visible = false;
 
-blocks.push(createBlock(55, -1.5, 8));
+
+blocks.push(createBlock(46, -1.5, 8));
 let cube13 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
 cube13.setFromObject(blocks[13]);
 block_colisions.push(cube13);
+blocks[13].visible = false;
 
 
 colisions.push(createTile(64, -2.25, 8, 0, 2));
@@ -1195,30 +1198,107 @@ function spotlightscontrol() {
     for (var i = 0; i < 8; i++) {
         spotlights[i].intensity = 0;
     }
+    if (blocks[12].position.y > -1.5) {
+        blocks[12].visible = true;
+    } else
+        blocks[12].visible = false;
+
+    if (blocks[13].position.y > -1.5) {
+        blocks[13].visible = true;
+    } else
+        blocks[13].visible = false;
+
     if (characterBox.position.x >= 41 && characterBox.position.x <= 50) {
-        if (characterBox.position.z <= 0)
+        if (characterBox.position.z <= 0) {
             spotlights[4].intensity = 1;
-        if (characterBox.position.z > 0)
+            if (blocks[12].position.x >= 41 && blocks[12].position.x <= 50)
+                if (blocks[12].position.z <= 0)
+                    blocks[12].visible = true;
+            if (blocks[13].position.x >= 41 && blocks[13].position.x <= 50)
+                if (blocks[13].position.z <= 0)
+                    blocks[13].visible = true;
+
+        }
+        if (characterBox.position.z > 0) {
             spotlights[0].intensity = 1;
-    }
-    if (characterBox.position.x >= 51 && characterBox.position.x <= 60) {
-        if (characterBox.position.z <= 0)
-            spotlights[5].intensity = 1;
-        if (characterBox.position.z > 0)
-            spotlights[1].intensity = 1;
-    }
-    if (characterBox.position.x >= 61 && characterBox.position.x <= 70) {
-        if (characterBox.position.z <= 0)
-            spotlights[6].intensity = 1;
-        if (characterBox.position.z > 0)
-            spotlights[2].intensity = 1;
-    }
-    if (characterBox.position.x >= 71 && characterBox.position.x <= 80) {
-        if (characterBox.position.z <= 0)
-            spotlights[7].intensity = 1;
-        if (characterBox.position.z > 0)
-            spotlights[3].intensity = 1;
-    }
+            if (blocks[12].position.x >= 41 && blocks[12].position.x <= 50)
+                if (blocks[12].position.z > 0)
+                    blocks[12].visible = true;
+            if (blocks[13].position.x >= 41 && blocks[13].position.x <= 50)
+                if (blocks[13].position.z > 0)
+                    blocks[13].visible = true;
+
+        }
+
+    } else
+        if (characterBox.position.x >= 51 && characterBox.position.x <= 60) {
+            if (characterBox.position.z <= 0) {
+                spotlights[5].intensity = 1;
+                if (blocks[12].position.x >= 51 && blocks[12].position.x <= 60)
+                    if (blocks[12].position.z <= 0)
+                        blocks[12].visible = true;
+                if (blocks[13].position.x >= 51 && blocks[13].position.x <= 60)
+                    if (blocks[13].position.z <= 0)
+                        blocks[13].visible = true;
+
+            } else
+                if (characterBox.position.z > 0) {
+                    spotlights[1].intensity = 1;
+                    if (blocks[12].position.x >= 51 && blocks[12].position.x <= 60)
+                        if (blocks[12].position.z > 0)
+                            blocks[12].visible = true;
+                    if (blocks[13].position.x >= 51 && blocks[13].position.x <= 60)
+                        if (blocks[13].position.z > 0)
+                            blocks[13].visible = true;
+
+                }
+
+
+        } else
+            if (characterBox.position.x >= 61 && characterBox.position.x <= 70) {
+                if (characterBox.position.z <= 0) {
+                    spotlights[6].intensity = 1;
+                    if (blocks[12].position.x >= 61 && blocks[12].position.x <= 70)
+                        if (blocks[12].position.z <= 0)
+                            blocks[12].visible = true;
+                    if (blocks[13].position.x >= 61 && blocks[13].position.x <= 70)
+                        if (blocks[13].position.z <= 0)
+                            blocks[13].visible = true;
+
+                }
+                if (characterBox.position.z > 0) {
+                    spotlights[2].intensity = 1;
+                    if (blocks[12].position.x >= 61 && blocks[12].position.x <= 70)
+                        if (blocks[12].position.z > 0)
+                            blocks[12].visible = true;
+                    if (blocks[13].position.x >= 61 && blocks[13].position.x <= 70)
+                        if (blocks[13].position.z > 0)
+                            blocks[13].visible = true;
+
+                }
+            } else
+                if (characterBox.position.x >= 71 && characterBox.position.x <= 80) {
+                    if (characterBox.position.z <= 0) {
+                        spotlights[7].intensity = 1;
+                        if (blocks[12].position.x >= 71 && blocks[12].position.x <= 80)
+                            if (blocks[12].position.z <= 0)
+                                blocks[12].visible = true;
+                        if (blocks[13].position.x >= 71 && blocks[13].position.x <= 80)
+                            if (blocks[13].position.z <= 0)
+                                blocks[13].visible = true;
+
+                    }
+                    if (characterBox.position.z > 0) {
+                        spotlights[3].intensity = 1;
+                        if (blocks[12].position.x >= 71 && blocks[12].position.x <= 80)
+                            if (blocks[12].position.z > 0)
+                                blocks[12].visible = true;
+                        if (blocks[13].position.x >= 71 && blocks[13].position.x <= 80)
+                            if (blocks[13].position.z > 0)
+                                blocks[13].visible = true;
+
+                    }
+                }
 
 
 }
