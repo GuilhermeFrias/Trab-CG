@@ -6,14 +6,17 @@ import {
     initRenderer,
     setDefaultMaterial,
     createLightSphere,
+    createGroundPlaneWired,
 } from "../libs/util/util.js";
 import { CSG } from '../libs/other/CSGMesh.js'
 import { FontLoader } from '../build/jsm/loaders/FontLoader.js';
 import { TextGeometry } from '../build/jsm/geometries/TextGeometry.js';
+import { BufferAttribute, DirectionalLight } from '../build/three.module.js';
 
-
+let spotlights = []
 let colisions = [];
 let block_colisions = [];
+let blocks = [];
 let key_collisions = [];
 
 let door_collisions = []
@@ -123,62 +126,6 @@ function endGame() {
 //========================================================================================================//
 //=========================================elementos do ambiente==========================================//
 
-// escada 
-function createStairs(size) {
-
-    let degrau = new THREE.BoxGeometry(5.2, 0.2, 0.8);
-
-    for (var i = 1; i < 10; i++) {
-
-
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
-        degrau1.receiveShadow = true;
-
-        degrau1.position.set(0, 0.2 * i, 25.5 + (i * 0.5));
-        scene.add(degrau1);
-        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        deegBB.setFromObject(degrau1);
-        colisions.push(deegBB);
-    }
-
-    for (var i = 1; i < 10; i++) {
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
-        degrau1.receiveShadow = true;
-
-        degrau1.position.set(0, -0.2 * i, -(26.5 + (i * 0.5)));
-        scene.add(degrau1);
-        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        deegBB.setFromObject(degrau1);
-        colisions.push(deegBB);
-    }
-
-    for (var i = 1; i < 10; i++) {
-
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
-        degrau1.receiveShadow = true;
-
-        degrau1.rotateY(1.5708);
-        degrau1.position.set((25.5 + (i * 0.5)), -0.2 * i, 0);
-        scene.add(degrau1);
-        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        deegBB.setFromObject(degrau1);
-        colisions.push(deegBB);
-    }
-
-    for (var i = 1; i < 10; i++) {
-
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
-        degrau1.receiveShadow = true;
-
-        degrau1.position.set(-(25.5 + (i * 0.5)), 0.2 * i, 0);
-        degrau1.rotateY(1.5708);
-        scene.add(degrau1);
-        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        deegBB.setFromObject(degrau1);
-        colisions.push(deegBB);
-    }
-
-}
 
 function createArch(size) {
     let retangleMesh = new THREE.Mesh(new THREE.BoxGeometry(7.5, 10, 0.99));
@@ -233,7 +180,89 @@ function createArch(size) {
     scene.add(arch2);
     scene.add(arch3);
     scene.add(arch4);
+
 }
+
+
+// escada 
+function createStairs(size) {
+
+
+    function guards(x, y, z, degree) {
+        let guardStair = new THREE.BoxGeometry(1, 6, 6);
+        let guard = new THREE.Mesh(guardStair, collisionMaterial);
+        guard.position.set(x, y, z);
+        guard.rotateY(degree);
+        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+        deegBB.setFromObject(guard);
+        colisions.push(deegBB);
+        scene.add(guard);
+    }
+    guards(-3, 2, 28, 0);
+    guards(3, 2, 28, 0);
+    guards(-3, 1, -28.4, 0);
+    guards(3, 1, -28.4, 0);
+
+    guards(-28, 2, -3, 1.5708);
+    guards(-28, 2, 3, 1.5708);
+    guards(28, 1, -3, 1.5708);
+    guards(28, 1, 3, 1.5708);
+
+    let degrau = new THREE.BoxGeometry(5.2, 0.2, 0.8);
+
+    for (var i = 1; i < 10; i++) {
+
+
+        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
+
+        degrau1.position.set(0, 0.2 * i, 25.5 + (i * 0.5));
+        scene.add(degrau1);
+        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+        deegBB.setFromObject(degrau1);
+        colisions.push(deegBB);
+    }
+
+    for (var i = 1; i < 10; i++) {
+
+        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
+
+        degrau1.position.set(0, -0.2 * i, -(26.5 + (i * 0.5)));
+        scene.add(degrau1);
+        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+        deegBB.setFromObject(degrau1);
+        colisions.push(deegBB);
+    }
+
+    for (var i = 1; i < 10; i++) {
+
+        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
+
+        degrau1.rotateY(1.5708);
+        degrau1.position.set((25.5 + (i * 0.5)), -0.2 * i, 0);
+        scene.add(degrau1);
+        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+        deegBB.setFromObject(degrau1);
+        colisions.push(deegBB);
+    }
+
+    for (var i = 1; i < 10; i++) {
+
+        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        degrau1.receiveShadow = true;
+
+        degrau1.position.set(-(25.5 + (i * 0.5)), 0.2 * i, 0);
+        degrau1.rotateY(1.5708);
+        scene.add(degrau1);
+        let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+        deegBB.setFromObject(degrau1);
+        colisions.push(deegBB);
+    }
+
+}
+
 
 //========================================================================================================//
 //=========================================CRIAÇÃO DO AMBIENTE============================================//
@@ -303,8 +332,8 @@ function createBlock(x, y, z) {
     interactable_block.position.set(x, y, z);
     interactable_block.castShadow = true
     scene.add(interactable_block);
+    return interactable_block;
 
-    return setColision(interactable_block)
 }
 
 function setColision(obj) {
@@ -345,11 +374,11 @@ for (var i = 0; i < max; i++) {
         colisions.push(createTile((max / 2) - 1, 0.5, i - (max / 2), 0));
 }
 
-createPorta(5,0.8, 0, 4.75, 25, groundMaterialGrey)
+createPorta(5, 0.8, 0, 4.75, 25, groundMaterialGrey)
 createPorta(0.8, 5, -25.98, 4.75, 0, yellowMaterial)
 createPorta(0.8, 5, 25, 4.75, 0, groundMaterialRed)
 
-function createPorta(scaleX, scaleZ, x,y,z, material){
+function createPorta(scaleX, scaleZ, x, y, z, material) {
     //criação das portas
     let porta_mesh = new THREE.BoxGeometry(scaleX, 9.5, scaleZ);
     let porta_trigger = new THREE.BoxGeometry(scaleX, 9.5, scaleZ * 10);
@@ -411,12 +440,37 @@ for (var i = 0; i < 11; i++) {
     }
 }
 
-block_colisions.push(createBlock(6, -1.5, -43));
-block_colisions.push(createBlock(-4, -1.5, -56));
-block_colisions.push(createBlock(-3, -1.5, -45));
-block_colisions.push(createBlock(-7, -1.5, -47));
-block_colisions.push(createBlock(4, -1.5, -50));
-block_colisions.push(createBlock(7, -1.5, -60));
+blocks.push(createBlock(6, -1.5, -43));
+let cube0 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube0.setFromObject(blocks[0]);
+block_colisions.push(cube0);
+
+blocks.push(createBlock(-4, -1.5, -56));
+let cube1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube1.setFromObject(blocks[1]);
+block_colisions.push(cube1);
+
+
+
+blocks.push(createBlock(-3, -1.5, -45));
+let cube2 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube2.setFromObject(blocks[2]);
+block_colisions.push(cube2);
+
+blocks.push(createBlock(-7, -1.5, -47));
+let cube3 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube3.setFromObject(blocks[3]);
+block_colisions.push(cube3);
+
+blocks.push(createBlock(4, -1.5, -50));
+let cube4 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube4.setFromObject(blocks[4]);
+block_colisions.push(cube4);
+
+blocks.push(createBlock(7, -1.5, -60));
+let cube5 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+cube5.setFromObject(blocks[5]);
+block_colisions.push(cube5);
 
 //ponte
 
@@ -433,9 +487,7 @@ for (var i = 0; i < 14; i++) {
     colisions.push(createTile(5, -1.5, -85 + i, 0, 1));
 }
 
-for (var i = 0; i < 3; i++) {
-    colisions.push(createTile(2, -1.5, -70 + i, 0, 1));
-}
+
 
 
 //=============================================================================================================================//
@@ -518,6 +570,49 @@ for (var i = 0; i < 25; i++) {
         colisions.push(createTile(79, -1.5, i - 11, 0, 3));
 }
 
+const butonMaterialRed = new THREE.MeshLambertMaterial(
+    {
+        color: '#610C04',
+        emissive: 0xff0000,
+        emissiveIntensity: 1,
+    }
+);
+
+//butons
+for (var i = 0; i < 4; i++) {
+    let butons = new THREE.BoxGeometry(0.5, 0.5, 2);
+    let buton = new THREE.Mesh(butons, butonMaterialRed);
+    buton.position.set(46 + i * 9, -1.5, 12.5);
+    scene.add(buton);
+}
+for (var i = 0; i < 4; i++) {
+    let butons = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    let buton = new THREE.Mesh(butons, butonMaterialRed);
+    buton.position.set(46 + i * 9, -1.5, -10.5);
+    scene.add(buton);
+}
+
+///spotlights
+
+for (var i = 0; i < 4; i++) {
+    let spotlight = new THREE.SpotLight("rgb(244,244,244)");
+    spotlight.position.set(46 + i * 9, 0.5, 8.5);;
+    spotlight.target.position.set(46 + i * 9, -1.5, 8.5);;
+    spotlight.target.updateMatrixWorld();
+    scene.add(spotlight);
+    spotlights.push(spotlight);
+}
+
+for (var i = 0; i < 4; i++) {
+    let spotlight = new THREE.SpotLight("rgb(244,244,244)");
+    spotlight.position.set(46 + i * 9, 0.5, -7.5);;
+    spotlight.target.position.set(46 + i * 9, -1.5, -7.5);;
+    spotlight.target.updateMatrixWorld();
+    scene.add(spotlight);
+    spotlights.push(spotlight);
+}
+
+
 
 //objs
 for (var i = 0; i < 14; i++) {
@@ -538,6 +633,9 @@ for (var i = 0; i < 14; i++) {
 for (var i = 0; i < 9; i++) {
     colisions.push(createTile(93, -1.5, -4 + i, 0, 3));
 }
+
+
+
 
 
 //=============================================================================================================================//
@@ -681,15 +779,15 @@ function checkCollisions() {
         if (key_collisions[i].intersectsBox(D1BB) || key_collisions[i].intersectsBox(S1BB) || key_collisions[i].intersectsBox(A1BB)) {
             if (i == 0) {
                 hasBlueKey = true
-                keys[0].position.set(1000,0,0)
+                keys[0].position.set(1000, 0, 0)
             }
             if (i == 1) {
                 hasRedKey = true
-                keys[1].position.set(1000,0,0)
+                keys[1].position.set(1000, 0, 0)
             }
             if (i == 2) {
                 hasYellowKey = true
-                keys[2].position.set(1000,0,0)
+                keys[2].position.set(1000, 0, 0)
             }
         }
     }
@@ -699,17 +797,17 @@ function checkCollisions() {
             if (i == 0 && hasBlueKey) {
                 const posTarget = new THREE.Vector3(0, -4.75, 25)
                 doors[0].position.lerp(posTarget, 0.1)
-                setTimeout(() => {  hasBlueKey = false; door_collisions.pop();}, 2000);
+                setTimeout(() => { hasBlueKey = false; door_collisions.pop(); }, 2000);
             }
             if (i == 0 && hasRedKey && !redOpened) {
                 const posTarget = new THREE.Vector3(25, -4.75, 0)
                 doors[2].position.lerp(posTarget, 0.1)
-                setTimeout(() => {  redOpened = true; door_collisions.pop();}, 2000);
+                setTimeout(() => { redOpened = true; door_collisions.pop(); }, 2000);
             }
             if (i == 0 && hasYellowKey && !yellowOpened) {
                 const posTarget = new THREE.Vector3(-25.98, -4.75, 0)
                 doors[1].position.lerp(posTarget, 0.1)
-                setTimeout(() => {  yellowOpened = true; door_collisions.pop();}, 2000);
+                setTimeout(() => { yellowOpened = true; door_collisions.pop(); }, 2000);
             } //colisoes sumindo todas e ainda é necessario remover os triggers
         }
     }
@@ -719,13 +817,19 @@ function checkCollisions() {
     }
 
     if (fall < 1) {
+        if (characterBox.position.y < -1.5) {
+            offD = false;
+            offS = false;
+            offW = false;
+            offA = false;
+        }
         cair();
     }
 
 }
 
 function cair() {
-    characterBox.translateY(-0.1);
+    characterBox.translateY(-0.2);
 }
 
 
@@ -773,6 +877,9 @@ window.addEventListener('click', Event => {
             objeto_carregado.getWorldPosition(v);
             scene.add(objeto_carregado)
 
+            objeto_carregado.position.set(Math.round(v.x), Math.round(v.y), Math.round(v.z))
+            console.log(objeto_carregado.position)
+
             //verifica ponte
             if ((Math.round(v.x) < 3 || Math.round(v.x) > -3) && Math.round(v.z) > -72) {
                 if (Math.round(v.z) == -69 && !posicionados[0]) {
@@ -793,13 +900,19 @@ window.addEventListener('click', Event => {
                 else if (Math.round(v.z) == -71 && !posicionados[5]) {
                     createBridge(-1, -71, 5)
                 }
-                else{
-                    objeto_carregado.position.set(Math.round(v.x), Math.round(v.y) - 1.5, Math.round(v.z))
-                }
-
+                else
+                    var x = Math.round(v.x)
+                var y = Math.round(v.y)
+                var z = Math.round(v.z)
+                var target = new THREE.Vector3(x, y, z);
+                objeto_carregado.position.lerp(target, 0.01)
             }
             else {
-                objeto_carregado.position.set(Math.round(v.x),  Math.round(v.y) - 1.5, Math.round(v.z))
+                var x = Math.round(v.x)
+                var y = Math.round(v.y)
+                var z = Math.round(v.z)
+                var target = new THREE.Vector3(x, y, z);
+                objeto_carregado.position.lerp(target, 0.1)
             }
 
         }
@@ -807,8 +920,6 @@ window.addEventListener('click', Event => {
 });
 //*********************************************************************************************************/
 //========================================================================================================//
-
-
 
 
 
@@ -1029,6 +1140,47 @@ function ratationAnimation() {
 }
 //========================================================================================================//
 //========================================================================================================//
+function attcolisisionsMovables() {
+    for (var i = 0; i < block_colisions.length; i++)
+        block_colisions[i].copy(blocks[i].geometry.boundingBox).applyMatrix4(blocks[i].matrixWorld);
+}
+
+
+
+
+
+
+function spotlightscontrol() {
+    for (var i = 0; i < 8; i++) {
+        spotlights[i].intensity = 0;
+    }
+    if (characterBox.position.x >= 41 && characterBox.position.x <= 50) {
+        if (characterBox.position.z <= 0)
+            spotlights[4].intensity = 1;
+        if (characterBox.position.z > 0)
+            spotlights[0].intensity = 1;
+    }
+    if (characterBox.position.x >= 51 && characterBox.position.x <= 60) {
+        if (characterBox.position.z <= 0)
+            spotlights[5].intensity = 1;
+        if (characterBox.position.z > 0)
+            spotlights[1].intensity = 1;
+    }
+    if (characterBox.position.x >= 61 && characterBox.position.x <= 70) {
+        if (characterBox.position.z <= 0)
+            spotlights[6].intensity = 1;
+        if (characterBox.position.z > 0)
+            spotlights[2].intensity = 1;
+    }
+    if (characterBox.position.x >= 71 && characterBox.position.x <= 80) {
+        if (characterBox.position.z <= 0)
+            spotlights[7].intensity = 1;
+        if (characterBox.position.z > 0)
+            spotlights[3].intensity = 1;
+    }
+
+
+}
 
 render();
 function render() {
@@ -1045,10 +1197,24 @@ function render() {
 
         endGame();
     }
+
+    if (characterBox.position.x >= 23 && dirLight.intensity > 0) {
+
+        dirLight.intensity = dirLight.intensity - 0.02;
+        ambLight.intensity = ambLight.intensity - 0.012;
+    }
+    if (characterBox.position.x < 23 && dirLight.intensity < 0.4) {
+
+        dirLight.intensity = dirLight.intensity + 0.02;
+        ambLight.intensity = ambLight.intensity + 0.012;
+    }
     requestAnimationFrame(render);
     if (!textVisible) {
         keyboardUpdate();
 
     }
+
+    spotlightscontrol();
+    attcolisisionsMovables();
     renderer.render(scene, camera);
 }
