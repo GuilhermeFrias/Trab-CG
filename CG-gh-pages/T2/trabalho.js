@@ -859,16 +859,11 @@ function checkCollisions() {
             if (i == 0 && hasBlueKey) {
                 const posTarget = new THREE.Vector3(0, -4.75, 25)
                 doors[0].position.lerp(posTarget, 0.1)
-                setTimeout(() => { hasBlueKey = false; 
-                    door_collisions[0].translate(new THREE.Vector3(1000,1000,1000));
-                    door_triggers[0].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
-            }
-            if (i == 2 && hasRedKey) {
-                const posTarget = new THREE.Vector3(25, -4.75, 0)
-                doors[2].position.lerp(posTarget, 0.1)
-                setTimeout(() => { hasBlueKey = false; 
-                    door_collisions[2].translate(new THREE.Vector3(1000,1000,1000));
-                    door_triggers[2].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
+                setTimeout(() => {
+                    hasBlueKey = false;
+                    door_collisions[0].translate(new THREE.Vector3(1000, 1000, 1000));
+                    door_triggers[0].translate(new THREE.Vector3(1000, 1000, 1000));
+                }, 2000);
             }
             if (i == 1 && hasYellowKey) {
                 const posTarget = new THREE.Vector3(-25.98, -4.75, 0)
@@ -877,6 +872,15 @@ function checkCollisions() {
                     door_collisions[1].translate(new THREE.Vector3(1000,1000,1000));
                     door_triggers[1].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
             } 
+            if (i == 2 && hasRedKey) {
+                const posTarget = new THREE.Vector3(25, -4.75, 0)
+                doors[2].position.lerp(posTarget, 0.1)
+                setTimeout(() => {
+                    hasBlueKey = false;
+                    door_collisions[2].translate(new THREE.Vector3(1000, 1000, 1000));
+                    door_triggers[2].translate(new THREE.Vector3(1000, 1000, 1000));
+                }, 2000);
+            }
             //*************************************************************************** */
             //*************************************************************************** */
             //AQUI ESTAO AS PORTAS DO PUZZLE, A PORTA DE ID 3 É A DO PUZZLE AZUL E A COM ID 4 É DO PUZZLE VERMELHO
@@ -894,7 +898,6 @@ function checkCollisions() {
                     door_collisions[4].translate(new THREE.Vector3(1000,1000,1000));
                     door_triggers[4].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
             }
-
         }
     }
 
@@ -1348,7 +1351,7 @@ function render() {
     G1BB.copy(collisionGround.geometry.boundingBox).applyMatrix4(collisionGround.matrixWorld);
 
     checkCollisions();
-    if (hasBlueKey && hasRedKey && hasYellowKey && textVisible == false) {
+    if (hasYellowKey && characterBox.position.y >= 3.35) {
 
         endGame();
     }
