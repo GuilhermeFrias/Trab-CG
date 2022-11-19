@@ -901,18 +901,10 @@ window.addEventListener('click', Event => {
                     createBridge(-1, -71, 5)
                 }
                 else
-                    var x = Math.round(v.x)
-                var y = Math.round(v.y)
-                var z = Math.round(v.z)
-                var target = new THREE.Vector3(x, y, z);
-                objeto_carregado.position.lerp(target, 0.01)
+                    objeto_carregado.position.set(Math.round(v.x), Math.round(v.y) - 1.5, Math.round(v.z))
             }
             else {
-                var x = Math.round(v.x)
-                var y = Math.round(v.y)
-                var z = Math.round(v.z)
-                var target = new THREE.Vector3(x, y, z);
-                objeto_carregado.position.lerp(target, 0.1)
+                objeto_carregado.position.set(Math.round(v.x), Math.round(v.y) - 1.5, Math.round(v.z))
             }
 
         }
