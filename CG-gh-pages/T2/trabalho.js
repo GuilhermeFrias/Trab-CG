@@ -730,6 +730,16 @@ cameraHolder2.add(camera2);
 characterBox.add(cameraHolder2);
 
 var camera = camera1;
+
+window.addEventListener('resize', redimensionar);
+
+function redimensionar() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.render(scene, camera);
+
+}
 //posicionamento das cameras
 cameraHolder1.translateX(6);
 cameraHolder1.translateY(3);
