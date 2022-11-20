@@ -87,6 +87,16 @@ var hasBlueKey = false
 var hasRedKey = false
 var hasYellowKey = false
 
+//puzzle Controller
+var bloco1Acionado = false;
+var bloco2Acionado = false;
+var bloco3Acionado = false;
+var bloco4Acionado = false;
+var bloco5Acionado = false;
+
+var puzzle1Completo = false;
+var puzzle2Completo = false;
+
 let doors = []
 let keys = []
 
@@ -820,6 +830,10 @@ cube1BB.setFromObject(collisionGround);
 function checkCollisions() {
     var fall = 0
     var jump = false;
+    if (bloco1Acionado && bloco2Acionado && bloco3Acionado)
+        puzzle1Completo = true;
+    if (bloco4Acionado && bloco5Acionado)
+        puzzle2Completo = true;
 
     for (var i = 0; i < colisions.length; i++) {
         if (colisions[i].intersectsBox(cube1BB)) { jump = true; }
@@ -892,7 +906,7 @@ function checkCollisions() {
             //*************************************************************************** */
             //*************************************************************************** */
             //AQUI ESTAO AS PORTAS DO PUZZLE, A PORTA DE ID 3 É A DO PUZZLE AZUL E A COM ID 4 É DO PUZZLE VERMELHO
-            if (i == 3/*&& CONDIÇÃO*/) {
+            if (i == 3 && puzzle1Completo) {
                 const posTarget = new THREE.Vector3(0, -4.75, 68)
                 doors[3].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
@@ -901,7 +915,7 @@ function checkCollisions() {
                     door_triggers[3].translate(new THREE.Vector3(1000, 1000, 1000));
                 }, 1200);
             }
-            if (i == 4 /*&& CONDIÇÃO*/) {
+            if (i == 4 && puzzle2Completo) {
                 const posTarget = new THREE.Vector3(79, -6.75, 0)
                 doors[4].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
