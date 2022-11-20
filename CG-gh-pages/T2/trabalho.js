@@ -829,12 +829,12 @@ function checkCollisions() {
         if (colisions[i].intersectsBox(W1BB)) { offW = false; }
         if (colisions[i].intersectsBox(G1BB)) { fall = fall + 1; }
     }
-    // for (var i = 0; i < door_collisions.length; i++) {
-    //     if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
-    //     if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
-    //     if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
-    //     if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
-    // }
+    for (var i = 0; i < door_collisions.length; i++) {
+        if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
+        if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
+        if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
+        if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
+    }
     for (var i = 0; i < block_colisions.length; i++) {
         if (block_colisions[i].intersectsBox(D1BB)) { offD = false; }
         if (block_colisions[i].intersectsBox(S1BB)) { offS = false; }
@@ -874,10 +874,12 @@ function checkCollisions() {
             if (i == 1 && hasYellowKey) {
                 const posTarget = new THREE.Vector3(-25.98, -4.75, 0)
                 doors[1].position.lerp(posTarget, 0.1)
-                setTimeout(() => { hasBlueKey = false; 
-                    door_collisions[1].translate(new THREE.Vector3(1000,1000,1000));
-                    door_triggers[1].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
-            } 
+                setTimeout(() => {
+                    hasBlueKey = false;
+                    door_collisions[1].translate(new THREE.Vector3(1000, 1000, 1000));
+                    door_triggers[1].translate(new THREE.Vector3(1000, 1000, 1000));
+                }, 2000);
+            }
             if (i == 2 && hasRedKey) {
                 const posTarget = new THREE.Vector3(25, -4.75, 0)
                 doors[2].position.lerp(posTarget, 0.1)
@@ -893,16 +895,20 @@ function checkCollisions() {
             if (i == 3/*&& CONDIÇÃO*/) {
                 const posTarget = new THREE.Vector3(0, -4.75, 68)
                 doors[3].position.lerp(posTarget, 0.1)
-                setTimeout(() => { hasBlueKey = false; 
-                    door_collisions[3].translate(new THREE.Vector3(1000,1000,1000));
-                    door_triggers[3].translate(new THREE.Vector3(1000,1000,1000)); }, 1200);
+                setTimeout(() => {
+                    hasBlueKey = false;
+                    door_collisions[3].translate(new THREE.Vector3(1000, 1000, 1000));
+                    door_triggers[3].translate(new THREE.Vector3(1000, 1000, 1000));
+                }, 1200);
             }
             if (i == 4 /*&& CONDIÇÃO*/) {
                 const posTarget = new THREE.Vector3(79, -6.75, 0)
                 doors[4].position.lerp(posTarget, 0.1)
-                setTimeout(() => { hasBlueKey = false; 
-                    door_collisions[4].translate(new THREE.Vector3(1000,1000,1000));
-                    door_triggers[4].translate(new THREE.Vector3(1000,1000,1000)); }, 2000);
+                setTimeout(() => {
+                    hasBlueKey = false;
+                    door_collisions[4].translate(new THREE.Vector3(1000, 1000, 1000));
+                    door_triggers[4].translate(new THREE.Vector3(1000, 1000, 1000));
+                }, 2000);
             }
         }
     }
@@ -917,6 +923,7 @@ function checkCollisions() {
             offS = false;
             offW = false;
             offA = false;
+            characterBox.position.set(0, 0, 0);
         }
         cair();
     }
