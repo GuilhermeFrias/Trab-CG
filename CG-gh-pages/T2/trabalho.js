@@ -11,14 +11,15 @@ import {
 import { CSG } from '../libs/other/CSGMesh.js'
 import { FontLoader } from '../build/jsm/loaders/FontLoader.js';
 import { TextGeometry } from '../build/jsm/geometries/TextGeometry.js';
-import { BufferAttribute, DirectionalLight } from '../build/three.module.js';
+
 
 let spotlights = []
 let colisions = [];
 let block_colisions = [];
 let blocks = [];
 let key_collisions = [];
-
+let buttonsObj = [];
+let buttons = [];
 let door_collisions = []
 let door_triggers = []
 
@@ -88,12 +89,7 @@ var hasRedKey = false
 var hasYellowKey = false
 
 //puzzle Controller
-var bloco1Acionado = false;
-var bloco2Acionado = false;
-var bloco3Acionado = false;
-var bloco4Acionado = false;
-var bloco5Acionado = false;
-
+var botoesAcionados = new Array(5).fill(false);
 var puzzle1Completo = false;
 var puzzle2Completo = false;
 
@@ -275,6 +271,17 @@ function createStairs(size) {
 //criação de tile
 let block = new THREE.BoxGeometry(1, 1, 1);
 let decoration = new THREE.BoxGeometry(0.9, 1.1, 0.9);
+function createButton(x, y, z) {
+    let b = new THREE.BoxGeometry(1.7, 1.5, 1.7);
+    let button = new THREE.Mesh(b, groundMaterialRed);
+    button.castShadow = true;
+    button.position.set(x, y, z);
+
+    buttonsObj.push(button);
+    scene.add(button);
+    return setColision(button);
+
+}
 
 function createTile(x, y, z, c, color) {
     if (c == 0 || c == 2) {
@@ -391,7 +398,7 @@ createPorta(0.8, 5, 79, 2.75, 0, groundMaterialRed)//4
 function createPorta(scaleX, scaleZ, x, y, z, material) {
     //criação das portas
     let porta_mesh = new THREE.BoxGeometry(scaleX, 9.5, scaleZ);
-    let porta_trigger = new THREE.BoxGeometry(scaleX, 9.5, scaleZ * 10);
+    let porta_trigger = new THREE.BoxGeometry(scaleX * 25, 9.5, scaleZ * 25);
     let porta = new THREE.Mesh(porta_mesh, material);
     porta.castShadow = true
     let porta_trigger_obj = new THREE.Mesh(porta_trigger, collisionMaterial)
@@ -546,7 +553,7 @@ cube5.setFromObject(blocks[11]);
 block_colisions.push(cube11);
 
 for (var i = 0; i <= 2; i++) {
-    colisions.push(createTile(-4 + i * 5, 1.75, 63, 0, 3));
+    buttons.push(createButton(-4 + i * 5, 1.75, 57, 0, 3));
 }
 
 //walls
@@ -687,8 +694,11 @@ block_colisions.push(cube13);
 blocks[13].visible = false;
 
 
-colisions.push(createTile(64, -2.25, 8, 0, 2));
-colisions.push(createTile(46, -2.25, -7, 0, 2));
+buttons.push(createButton(64, -2.25, 8, 0, 2));
+buttons.push(createButton(46, -2.25, -7, 0, 2));
+
+
+
 
 //walls
 for (var i = 0; i < 14; i++) {
@@ -731,19 +741,25 @@ for (var i = 0; i < 2; i++) {
 //========================================================================================================//
 //===========================================CRIAÇÃO DAS CAMERAS==========================================//
 // variavel para a troca de camera
-let cameraControl = true;
+let cameraControl = 1;
 
 let camParam = 90;
 let camera1 = new THREE.OrthographicCamera(-window.innerWidth / camParam, window.innerWidth / camParam, window.innerHeight / camParam, window.innerHeight / -camParam, -camParam, camParam);
 let camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-
+let camera3 = new THREE.OrthographicCamera(-window.innerWidth / camParam, window.innerWidth / camParam, window.innerHeight / camParam, window.innerHeight / -camParam, -camParam, camParam);
 let cameraHolder1 = new THREE.Object3D();
 cameraHolder1.add(camera1);
 characterBox.add(cameraHolder1);
 
+
 let cameraHolder2 = new THREE.Object3D();
 cameraHolder2.add(camera2);
 characterBox.add(cameraHolder2);
+
+
+let cameraHolder3 = new THREE.Object3D();
+cameraHolder3.add(camera3);
+characterBox.add(cameraHolder3);
 
 var camera = camera1;
 
@@ -768,6 +784,12 @@ cameraHolder2.translateY(12);
 cameraHolder2.translateZ(10);
 cameraHolder2.rotateY(0.79);
 cameraHolder2.rotateX(-0.79);
+
+cameraHolder3.translateX(6);
+cameraHolder3.translateY(2);
+cameraHolder3.translateZ(6);
+cameraHolder3.rotateY(0.79);
+cameraHolder3.rotateX(-0.2);
 //========================================================================================================//
 //========================================================================================================//
 
@@ -830,10 +852,6 @@ cube1BB.setFromObject(collisionGround);
 function checkCollisions() {
     var fall = 0
     var jump = false;
-    if (bloco1Acionado && bloco2Acionado && bloco3Acionado)
-        puzzle1Completo = true;
-    if (bloco4Acionado && bloco5Acionado)
-        puzzle2Completo = true;
 
     for (var i = 0; i < colisions.length; i++) {
         if (colisions[i].intersectsBox(cube1BB)) { jump = true; }
@@ -925,21 +943,75 @@ function checkCollisions() {
                 }, 2000);
             }
         }
+
+
     }
 
     if (jump) {
-        characterBox.translateY(0.1);
+        characterBox.translateY(0.18);
     }
 
     if (fall < 1) {
-        if (characterBox.position.y < -1.5) {
-            offD = false;
-            offS = false;
-            offW = false;
-            offA = false;
-            characterBox.position.set(0, 0, 0);
+        if (characterBox.position.y < -1) {
+            characterBox.position.set(0, 2, 0);
         }
         cair();
+    }
+
+
+    for (var i = 0; i < 5; i++) {
+        botoesAcionados[i] = false;
+    }
+
+    for (var i = 0; i < 5; i++) {
+        for (var j = 0; j < 14; j++)
+
+            if (buttons[i].intersectsBox(block_colisions[j])) {
+
+                botoesAcionados[i] = true;
+            }
+
+    }
+
+    for (var i = 0; i < 5; i++) {
+        if (i <= 2) {
+            if (botoesAcionados[i] && (buttonsObj[i].position.y > 1.5)) {
+                buttonsObj[i].translateY(-0.1);
+            }
+        }
+        else {
+            if (botoesAcionados[i] && (buttonsObj[i].position.y > -2.5)) {
+                buttonsObj[i].translateY(-0.1);
+            }
+        }
+    }
+
+    for (var i = 0; i < 5; i++) {
+        if (i <= 2) {
+            if ((botoesAcionados[i] == false) && (buttonsObj[i].position.y < 1.8)) {
+                buttonsObj[i].translateY(0.1);
+            }
+        }
+        else {
+            if (!(botoesAcionados[i]) && (buttonsObj[i].position.y < -2.25)) {
+                buttonsObj[i].translateY(0.1);
+            }
+        }
+    }
+
+
+    if (botoesAcionados[0] && botoesAcionados[1] && botoesAcionados[2]) {
+
+        puzzle1Completo = true;
+    }
+    else {
+        puzzle1Completo = false;
+    }
+    if (botoesAcionados[3] && botoesAcionados[4]) {
+        puzzle2Completo = true;
+    }
+    else {
+        puzzle2Completo = false;
     }
 
 }
@@ -1136,17 +1208,22 @@ function keyboardUpdate() {
 
 
     if (keyboard.down("C")) {
-        if (cameraControl) {
+        if (cameraControl == 0) {
+            camera = camera1;
+            cameraControl = 1;
+        }
+        else if (cameraControl == 1) {
             camera = camera2;
-            cameraControl = false;
+            cameraControl = 2;
+
         }
         else {
-            camera = camera1;
-            cameraControl = true;
+            camera = camera3;
+            cameraControl = 0;
+
         }
+
     }
-
-
 
     if ((keyboard.pressed("A") || keyboard.pressed("left")) && offA && (keyboard.pressed("W") || keyboard.pressed("up")) && offW) {
         characterBox.translateX(-moveDistance);
@@ -1254,11 +1331,11 @@ function attcolisisionsMovables() {
 }
 
 
-
-
-
-
 function spotlightscontrol() {
+
+    buttonsObj[3].visible = false;
+    buttonsObj[4].visible = false;
+
     for (var i = 0; i < 8; i++) {
         spotlights[i].intensity = 0;
     }
@@ -1272,9 +1349,11 @@ function spotlightscontrol() {
     } else
         blocks[13].visible = false;
 
+
     if (characterBox.position.x >= 41 && characterBox.position.x <= 50) {
         if (characterBox.position.z <= 0) {
             spotlights[4].intensity = 1;
+            buttonsObj[4].visible = true;
             if (blocks[12].position.x >= 41 && blocks[12].position.x <= 50)
                 if (blocks[12].position.z <= 0)
                     blocks[12].visible = true;
@@ -1332,6 +1411,7 @@ function spotlightscontrol() {
                 }
                 if (characterBox.position.z > 0) {
                     spotlights[2].intensity = 1;
+                    buttonsObj[3].visible = true;
                     if (blocks[12].position.x >= 61 && blocks[12].position.x <= 70)
                         if (blocks[12].position.z > 0)
                             blocks[12].visible = true;
@@ -1403,3 +1483,4 @@ function render() {
     attcolisisionsMovables();
     renderer.render(scene, camera);
 }
+
