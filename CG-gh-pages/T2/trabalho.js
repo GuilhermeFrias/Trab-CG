@@ -987,7 +987,7 @@ window.addEventListener('click', Event => {
             objeto_carregado.getWorldPosition(v);
 
         }
-        else if (carregando_obj) {
+        else if (carregando_obj && objeto_carregado.material == tileMaterialSelected) {
             carregando_obj = false
             objeto_carregado.material = tileMaterial;
             objeto_carregado.getWorldPosition(v);
