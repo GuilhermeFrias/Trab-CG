@@ -1458,7 +1458,7 @@ function render() {
     G1BB.copy(collisionGround.geometry.boundingBox).applyMatrix4(collisionGround.matrixWorld);
 
     checkCollisions();
-    if (hasYellowKey && characterBox.position.y >= 3.35) {
+    if (hasYellowKey && characterBox.position.y >= 3.25) {
 
         endGame();
     }
