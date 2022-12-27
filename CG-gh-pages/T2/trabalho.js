@@ -1311,10 +1311,10 @@ function ratationAnimation() {
         shortest = y;
 
     if (shortest < 0) {
-        velocity = -5;
+        velocity = -15;
     }
     else
-        velocity = 5;
+        velocity = 15;
 
     man.rotateY(THREE.MathUtils.degToRad(velocity));
     if (velocity < 0 && degreeAtt == 0)
@@ -1336,115 +1336,129 @@ function spotlightscontrol() {
     buttonsObj[3].visible = false;
     buttonsObj[4].visible = false;
 
-    for (var i = 0; i < 8; i++) {
-        spotlights[i].intensity = 0;
-    }
-    if (blocks[12].position.y > -1.5) {
-        blocks[12].visible = true;
-    } else
-        blocks[12].visible = false;
-
-    if (blocks[13].position.y > -1.5) {
-        blocks[13].visible = true;
-    } else
-        blocks[13].visible = false;
-
-
-    if (characterBox.position.x >= 41 && characterBox.position.x <= 50) {
-        if (characterBox.position.z <= 0) {
-            spotlights[4].intensity = 1;
+    if (puzzle2Completo) {
+        for (var i = 0; i < 8; i++) {
+            spotlights[i].intensity = 1;
+            blocks[12].visible = true;
+            blocks[13].visible = true;
+            buttonsObj[3].visible = true;
             buttonsObj[4].visible = true;
-            if (blocks[12].position.x >= 41 && blocks[12].position.x <= 50)
-                if (blocks[12].position.z <= 0)
-                    blocks[12].visible = true;
-            if (blocks[13].position.x >= 41 && blocks[13].position.x <= 50)
-                if (blocks[13].position.z <= 0)
-                    blocks[13].visible = true;
-
         }
-        if (characterBox.position.z > 0) {
-            spotlights[0].intensity = 1;
-            if (blocks[12].position.x >= 41 && blocks[12].position.x <= 50)
-                if (blocks[12].position.z > 0)
-                    blocks[12].visible = true;
-            if (blocks[13].position.x >= 41 && blocks[13].position.x <= 50)
-                if (blocks[13].position.z > 0)
-                    blocks[13].visible = true;
+    }
+    else {
 
+        for (var i = 0; i < 8; i++) {
+            spotlights[i].intensity = 0;
         }
 
-    } else
-        if (characterBox.position.x >= 51 && characterBox.position.x <= 60) {
+
+        if (blocks[12].position.y > -1.5) {
+            blocks[12].visible = true;
+        } else
+            blocks[12].visible = false;
+
+        if (blocks[13].position.y > -1.5) {
+            blocks[13].visible = true;
+        } else
+            blocks[13].visible = false;
+
+
+        if (characterBox.position.x >= 41 && characterBox.position.x <= 50) {
             if (characterBox.position.z <= 0) {
-                spotlights[5].intensity = 1;
-                if (blocks[12].position.x >= 51 && blocks[12].position.x <= 60)
+                spotlights[4].intensity = 1;
+                buttonsObj[4].visible = true;
+                if (blocks[12].position.x >= 41 && blocks[12].position.x <= 50)
                     if (blocks[12].position.z <= 0)
                         blocks[12].visible = true;
-                if (blocks[13].position.x >= 51 && blocks[13].position.x <= 60)
+                if (blocks[13].position.x >= 41 && blocks[13].position.x <= 50)
                     if (blocks[13].position.z <= 0)
                         blocks[13].visible = true;
 
-            } else
-                if (characterBox.position.z > 0) {
-                    spotlights[1].intensity = 1;
-                    if (blocks[12].position.x >= 51 && blocks[12].position.x <= 60)
-                        if (blocks[12].position.z > 0)
-                            blocks[12].visible = true;
-                    if (blocks[13].position.x >= 51 && blocks[13].position.x <= 60)
-                        if (blocks[13].position.z > 0)
-                            blocks[13].visible = true;
+            }
+            if (characterBox.position.z > 0) {
+                spotlights[0].intensity = 1;
+                if (blocks[12].position.x >= 41 && blocks[12].position.x <= 50)
+                    if (blocks[12].position.z > 0)
+                        blocks[12].visible = true;
+                if (blocks[13].position.x >= 41 && blocks[13].position.x <= 50)
+                    if (blocks[13].position.z > 0)
+                        blocks[13].visible = true;
 
-                }
-
+            }
 
         } else
-            if (characterBox.position.x >= 61 && characterBox.position.x <= 70) {
+            if (characterBox.position.x >= 51 && characterBox.position.x <= 60) {
                 if (characterBox.position.z <= 0) {
-                    spotlights[6].intensity = 1;
-                    if (blocks[12].position.x >= 61 && blocks[12].position.x <= 70)
+                    spotlights[5].intensity = 1;
+                    if (blocks[12].position.x >= 51 && blocks[12].position.x <= 60)
                         if (blocks[12].position.z <= 0)
                             blocks[12].visible = true;
-                    if (blocks[13].position.x >= 61 && blocks[13].position.x <= 70)
+                    if (blocks[13].position.x >= 51 && blocks[13].position.x <= 60)
                         if (blocks[13].position.z <= 0)
                             blocks[13].visible = true;
 
-                }
-                if (characterBox.position.z > 0) {
-                    spotlights[2].intensity = 1;
-                    buttonsObj[3].visible = true;
-                    if (blocks[12].position.x >= 61 && blocks[12].position.x <= 70)
-                        if (blocks[12].position.z > 0)
-                            blocks[12].visible = true;
-                    if (blocks[13].position.x >= 61 && blocks[13].position.x <= 70)
-                        if (blocks[13].position.z > 0)
-                            blocks[13].visible = true;
+                } else
+                    if (characterBox.position.z > 0) {
+                        spotlights[1].intensity = 1;
+                        if (blocks[12].position.x >= 51 && blocks[12].position.x <= 60)
+                            if (blocks[12].position.z > 0)
+                                blocks[12].visible = true;
+                        if (blocks[13].position.x >= 51 && blocks[13].position.x <= 60)
+                            if (blocks[13].position.z > 0)
+                                blocks[13].visible = true;
 
-                }
+                    }
+
+
             } else
-                if (characterBox.position.x >= 71 && characterBox.position.x <= 80) {
+                if (characterBox.position.x >= 61 && characterBox.position.x <= 70) {
                     if (characterBox.position.z <= 0) {
-                        spotlights[7].intensity = 1;
-                        if (blocks[12].position.x >= 71 && blocks[12].position.x <= 80)
+                        spotlights[6].intensity = 1;
+                        if (blocks[12].position.x >= 61 && blocks[12].position.x <= 70)
                             if (blocks[12].position.z <= 0)
                                 blocks[12].visible = true;
-                        if (blocks[13].position.x >= 71 && blocks[13].position.x <= 80)
+                        if (blocks[13].position.x >= 61 && blocks[13].position.x <= 70)
                             if (blocks[13].position.z <= 0)
                                 blocks[13].visible = true;
 
                     }
                     if (characterBox.position.z > 0) {
-                        spotlights[3].intensity = 1;
-                        if (blocks[12].position.x >= 71 && blocks[12].position.x <= 80)
+                        spotlights[2].intensity = 1;
+                        buttonsObj[3].visible = true;
+                        if (blocks[12].position.x >= 61 && blocks[12].position.x <= 70)
                             if (blocks[12].position.z > 0)
                                 blocks[12].visible = true;
-                        if (blocks[13].position.x >= 71 && blocks[13].position.x <= 80)
+                        if (blocks[13].position.x >= 61 && blocks[13].position.x <= 70)
                             if (blocks[13].position.z > 0)
                                 blocks[13].visible = true;
 
                     }
-                }
+                } else
+                    if (characterBox.position.x >= 71 && characterBox.position.x <= 80) {
+                        if (characterBox.position.z <= 0) {
+                            spotlights[7].intensity = 1;
+                            if (blocks[12].position.x >= 71 && blocks[12].position.x <= 80)
+                                if (blocks[12].position.z <= 0)
+                                    blocks[12].visible = true;
+                            if (blocks[13].position.x >= 71 && blocks[13].position.x <= 80)
+                                if (blocks[13].position.z <= 0)
+                                    blocks[13].visible = true;
+
+                        }
+                        if (characterBox.position.z > 0) {
+                            spotlights[3].intensity = 1;
+                            if (blocks[12].position.x >= 71 && blocks[12].position.x <= 80)
+                                if (blocks[12].position.z > 0)
+                                    blocks[12].visible = true;
+                            if (blocks[13].position.x >= 71 && blocks[13].position.x <= 80)
+                                if (blocks[13].position.z > 0)
+                                    blocks[13].visible = true;
+
+                        }
+                    }
 
 
+    }
 }
 
 render();
