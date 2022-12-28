@@ -775,21 +775,22 @@ function redimensionar() {
 //posicionamento das cameras
 cameraHolder1.translateX(6);
 cameraHolder1.translateY(3);
-cameraHolder1.translateZ(6);
-cameraHolder1.rotateY(0.79);
+cameraHolder1.translateZ(-6);
+cameraHolder1.rotateY(2.37);
 cameraHolder1.rotateX(-0.5);
 
 cameraHolder2.translateX(10);
 cameraHolder2.translateY(12);
-cameraHolder2.translateZ(10);
-cameraHolder2.rotateY(0.79);
+cameraHolder2.translateZ(-10);
+cameraHolder2.rotateY(2.37);
 cameraHolder2.rotateX(-0.79);
 
-cameraHolder3.translateX(6);
-cameraHolder3.translateY(2);
-cameraHolder3.translateZ(6);
-cameraHolder3.rotateY(0.79);
-cameraHolder3.rotateX(-0.2);
+// cameraHolder3.translateX(6);
+// cameraHolder3.translateY(2);
+// cameraHolder3.translateZ(6);
+// cameraHolder3.rotateY(0.79);
+// cameraHolder3.rotateX(-0.2);
+// cameraHolder3.position.setFromSphericalCoords(5, Math.PI / 3, Math.PI / 4);
 //========================================================================================================//
 //========================================================================================================//
 
@@ -1226,54 +1227,61 @@ function keyboardUpdate() {
     }
 
     if ((keyboard.pressed("A") || keyboard.pressed("left")) && offA && (keyboard.pressed("W") || keyboard.pressed("up")) && offW) {
-        characterBox.translateX(-moveDistance);
-        partialDegree = partialDegree + 270;
+        characterBox.translateZ(moveDistance);
+        partialDegree = 0;
+
         pressedKeys++;
     }
 
     else if ((keyboard.pressed("D") || keyboard.pressed("right")) && offD && (keyboard.pressed("W") || keyboard.pressed("up")) && offW) {
-        characterBox.translateZ(-moveDistance);
-        partialDegree = partialDegree + 180;
+        characterBox.translateX(-moveDistance);
+        partialDegree = partialDegree + 270;
+
         pressedKeys++;
 
     } else if ((keyboard.pressed("D") || keyboard.pressed("right")) && offD && (keyboard.pressed("S") || keyboard.pressed("down")) && offS) {
-        characterBox.translateX(moveDistance);
-        partialDegree = partialDegree + 90;
+        characterBox.translateZ(-moveDistance);
+        partialDegree = partialDegree + 180;
+
         pressedKeys++;
 
     } else if ((keyboard.pressed("A") || keyboard.pressed("left")) && offA && (keyboard.pressed("S") || keyboard.pressed("down")) && offS) {
-        characterBox.translateZ(moveDistance);
-        partialDegree = 0;
+        characterBox.translateX(moveDistance);
+        partialDegree = partialDegree + 90;
+
         pressedKeys++;
 
     } else {
-        var axisA = new THREE.Vector3(-0.75, 0, 0.75);
-        var axisS = new THREE.Vector3(0.75, 0, 0.75);
-        var axisD = new THREE.Vector3(0.75, 0, -0.75);
-        var axisW = new THREE.Vector3(-0.75, 0, -0.75);
+        var axisA = new THREE.Vector3(-0.75, 0, -0.75);
+        var axisS = new THREE.Vector3(-0.75, 0, 0.75);
+        var axisD = new THREE.Vector3(0.75, 0, 0.75);
+        var axisW = new THREE.Vector3(0.75, 0, -0.75);
 
         if ((keyboard.pressed("A") || keyboard.pressed("left")) && offA) {
-            characterBox.translateOnAxis(axisA, moveDistance);
+            characterBox.translateOnAxis(axisA, -moveDistance);
+            partialDegree = partialDegree + 45;
 
-            partialDegree = partialDegree + 315;
             pressedKeys++;
         }
 
         if ((keyboard.pressed("S") || keyboard.pressed("down")) && offS) {
-            characterBox.translateOnAxis(axisS, moveDistance);
-            partialDegree = partialDegree + 45;
+            characterBox.translateOnAxis(axisS, -moveDistance);
+            partialDegree = partialDegree + 135;
+
             pressedKeys++;
         }
 
         if ((keyboard.pressed("D") || keyboard.pressed("right")) && offD) {
-            characterBox.translateOnAxis(axisD, moveDistance);
-            partialDegree = partialDegree + 135;
+            characterBox.translateOnAxis(axisD, -moveDistance);
+            partialDegree = partialDegree + 225;
+
             pressedKeys++;
         }
 
         if ((keyboard.pressed("W") || keyboard.pressed("up")) && offW) {
-            characterBox.translateOnAxis(axisW, moveDistance);
-            partialDegree = partialDegree + 225;
+            characterBox.translateOnAxis(axisW, -moveDistance);
+            partialDegree = partialDegree + 315;
+
             pressedKeys++;
         }
 
