@@ -477,7 +477,7 @@ for (var i = 0; i < 38; i++) {
 
 for (var i = 0; i < 11; i++) {
     for (var j = 0; j < 14; j++) {
-        colisions.push(createTile(i - 5, -2.5, -85 + j, 0, 1));
+        colisions.push(createTile(i - 5, -2.5, -84.8 + j, 0, 1));
     }
 }
 
@@ -518,14 +518,14 @@ block_colisions.push(cube5);
 var posicionados = new Array(6).fill(false)
 // wals
 for (var i = 0; i < 11; i++) {
-    colisions.push(createTile(i - 5, -1.5, -85, 0, 1));
+    colisions.push(createTile(i - 5, -1.5, -84.8, 0, 1));
 }
 for (var i = 0; i < 14; i++) {
-    colisions.push(createTile(-5, -1.5, -85 + i, 0, 1));
+    colisions.push(createTile(-5, -1.5, -84.8 + i, 0, 1));
 }
 
 for (var i = 0; i < 14; i++) {
-    colisions.push(createTile(5, -1.5, -85 + i, 0, 1));
+    colisions.push(createTile(5, -1.5, -84.8 + i, 0, 1));
 }
 
 
@@ -971,7 +971,7 @@ function checkCollisions() {
     }
 
     if (fall < 1) {
-        if (characterBox.position.y < -2) {
+        if (characterBox.position.y < -1.5) {
             characterBox.position.set(0, 2, 0);
         }
         cair();
@@ -1090,22 +1090,22 @@ window.addEventListener('click', Event => {
             //verifica ponte
             if ((Math.round(v.x) < 3 || Math.round(v.x) > -3) && Math.round(v.z) > -72) {
                 if (Math.round(v.z) == -69 && !posicionados[0]) {
-                    createBridge(0, -69, 0)
+                    createBridge(0, -68.8, 0)
                 }
                 else if (Math.round(v.z) == -69 && !posicionados[1]) {
-                    createBridge(-1, -69, 1)
+                    createBridge(-1, -68.8, 1)
                 }
                 else if (Math.round(v.z) == -70 && !posicionados[2]) {
-                    createBridge(0, -70, 2)
+                    createBridge(0, -69.8, 2)
                 }
                 else if (Math.round(v.z) == -70 && !posicionados[3]) {
-                    createBridge(-1, -70, 3)
+                    createBridge(-1, -69.8, 3)
                 }
                 else if (Math.round(v.z) == -71 && !posicionados[4]) {
-                    createBridge(0, -71, 4)
+                    createBridge(0, -70.8, 4)
                 }
                 else if (Math.round(v.z) == -71 && !posicionados[5]) {
-                    createBridge(-1, -71, 5)
+                    createBridge(-1, -70.8, 5)
                 }
                 else
                     objeto_carregado.position.set(Math.round(v.x), Math.round(v.y) - 1.5, Math.round(v.z))
