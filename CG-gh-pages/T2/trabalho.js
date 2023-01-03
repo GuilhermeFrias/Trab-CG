@@ -11,6 +11,7 @@ import {
 import { CSG } from '../libs/other/CSGMesh.js'
 import { FontLoader } from '../build/jsm/loaders/FontLoader.js';
 import { TextGeometry } from '../build/jsm/geometries/TextGeometry.js';
+import { AudioLoader, Texture } from '../build/three.module.js';
 
 
 let spotlights = []
@@ -62,11 +63,8 @@ let clock = new THREE.Clock();
 let tileMaterial = setDefaultMaterial('rgb(223,195,156,255)');
 let tileMaterialSelected = setDefaultMaterial('rgb(246,2,150)');
 let groundMaterial = setDefaultMaterial('rgb(220,195,156,254)');
-let groundMaterialDecoration = setDefaultMaterial('rgb(61,18,3)');
 
-let groundMaterialGreen = setDefaultMaterial('#466D1D');
 let groundMaterialRed = setDefaultMaterial(0xF12323);
-let groundMaterialBlue = setDefaultMaterial('#3151E3D');
 let groundMaterialGrey = setDefaultMaterial(0x45AFF);
 
 let yellowMaterial = setDefaultMaterial(0xFFE53F)
@@ -124,12 +122,17 @@ function endGame() {
 
 }
 
-
 //========================================================================================================//
 //=========================================elementos do ambiente==========================================//
 
 
 function createArch(size) {
+
+    const textureLoader = new THREE.TextureLoader();
+    var stone = textureLoader.load('./assets/textures/wall.jpg');
+    let wallMaterial = new THREE.MeshLambertMaterial();
+    wallMaterial.map = stone;
+
     let retangleMesh = new THREE.Mesh(new THREE.BoxGeometry(7.5, 10, 0.99));
     let sphereMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.51, 2.5, 10, 32));
     let retangleMesh2 = new THREE.Mesh(new THREE.BoxGeometry(5.02, 10, 1));
@@ -152,13 +155,13 @@ function createArch(size) {
     csgObj = csgObj.subtract(retangleCSG);
 
     let arch1 = CSG.toMesh(csgObj, new THREE.Matrix4());
-    arch1.material = groundMaterial;
+    arch1.material = wallMaterial;
     let arch2 = CSG.toMesh(csgObj, new THREE.Matrix4());
-    arch2.material = groundMaterial;
+    arch2.material = wallMaterial;
     let arch3 = CSG.toMesh(csgObj, new THREE.Matrix4());
-    arch3.material = groundMaterial;
+    arch3.material = wallMaterial;
     let arch4 = CSG.toMesh(csgObj, new THREE.Matrix4());
-    arch4.material = groundMaterial;
+    arch4.material = wallMaterial;
 
     arch1.position.set(0, 5, (size / 2) - 1);
     arch2.position.set(0, 5, -(size / 2));
@@ -210,40 +213,50 @@ function createStairs(size) {
     guards(28, 1, -3, 1.5708);
     guards(28, 1, 3, 1.5708);
 
-    let degrau = new THREE.BoxGeometry(5.2, 0.2, 0.8);
+    let degrau = new THREE.BoxGeometry(5.2, 0.21, 0.85);
 
-    for (var i = 1; i < 10; i++) {
+    const textureLoader = new THREE.TextureLoader();
+
+    var wood = textureLoader.load('./assets/textures/wood.jpg');
+    let degrauMaterial = new THREE.MeshLambertMaterial();
+    degrauMaterial.map = wood;
 
 
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+
+
+
+    for (var i = 1; i < 12; i++) {
+
+
+        let degrau1 = new THREE.Mesh(degrau, degrauMaterial);
         degrau1.receiveShadow = true;
 
-        degrau1.position.set(0, 0.2 * i, 25.5 + (i * 0.5));
+        degrau1.position.set(0, 0.2 * i, 24.5 + (i * 0.5));
         scene.add(degrau1);
         let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
         deegBB.setFromObject(degrau1);
         colisions.push(deegBB);
     }
 
-    for (var i = 1; i < 10; i++) {
+    for (var i = 1; i < 14; i++) {
 
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        let degrau1 = new THREE.Mesh(degrau, degrauMaterial);
         degrau1.receiveShadow = true;
 
-        degrau1.position.set(0, -0.2 * i, -(26.5 + (i * 0.5)));
+        degrau1.position.set(0, 0.1 + (-0.2 * i), -(25 + (i * 0.5)));
         scene.add(degrau1);
         let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
         deegBB.setFromObject(degrau1);
         colisions.push(deegBB);
     }
 
-    for (var i = 1; i < 10; i++) {
+    for (var i = 1; i < 13; i++) {
 
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        let degrau1 = new THREE.Mesh(degrau, degrauMaterial);
         degrau1.receiveShadow = true;
 
         degrau1.rotateY(1.5708);
-        degrau1.position.set((25.5 + (i * 0.5)), -0.2 * i, 0);
+        degrau1.position.set((24.5 + (i * 0.5)), 0.2 + (-0.2 * i), 0);
         scene.add(degrau1);
         let deegBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
         deegBB.setFromObject(degrau1);
@@ -252,7 +265,7 @@ function createStairs(size) {
 
     for (var i = 1; i < 10; i++) {
 
-        let degrau1 = new THREE.Mesh(degrau, groundMaterial);
+        let degrau1 = new THREE.Mesh(degrau, degrauMaterial);
         degrau1.receiveShadow = true;
 
         degrau1.position.set(-(25.5 + (i * 0.5)), 0.2 * i, 0);
@@ -285,48 +298,16 @@ function createButton(x, y, z) {
 
 function createTile(x, y, z, c, color) {
     if (c == 0 || c == 2) {
-        let tile = new THREE.Mesh(block, groundMaterialDecoration);
+        const textureLoader = new THREE.TextureLoader();
+        var stone = textureLoader.load('./assets/textures/wall.jpg');
+        let wallMaterial = new THREE.MeshLambertMaterial();
+        wallMaterial.map = stone;
+
+        let tile = new THREE.Mesh(block, wallMaterial);
         tile.castShadow = true;
-
-        let decoration1 = new THREE.Mesh(decoration, groundMaterial);
-        decoration1.receiveShadow = true;
-        let decoration2 = new THREE.Mesh(decoration, groundMaterial);
-        decoration2.receiveShadow = true;
-        let decoration3 = new THREE.Mesh(decoration, groundMaterial);
-        decoration3.receiveShadow = true;
-
-        switch (color) {
-            case 1:
-                decoration1.material = groundMaterialGreen;
-                decoration2.material = groundMaterialGreen;
-                decoration3.material = groundMaterialGreen;
-                break;
-            case 2:
-                decoration1.material = groundMaterialBlue;
-                decoration2.material = groundMaterialBlue;
-                decoration3.material = groundMaterialBlue;
-                break;
-            case 3:
-                decoration1.material = groundMaterialGrey;
-                decoration2.material = groundMaterialGrey;
-                decoration3.material = groundMaterialGrey;
-                break;
-            case 4:
-                decoration1.material = groundMaterialRed;
-                decoration2.material = groundMaterialRed;
-                decoration3.material = groundMaterialRed;
-                break;
-        }
-
-
+        tile.receiveShadow = true;
         tile.position.set(x, y, z);
         scene.add(tile);
-
-        tile.add(decoration1);
-        decoration2.rotateZ(THREE.MathUtils.degToRad(90));
-        tile.add(decoration2);
-        decoration3.rotateX(THREE.MathUtils.degToRad(90));
-        tile.add(decoration3);
 
         return setColision(tile)
     }
@@ -355,19 +336,47 @@ function setColision(obj) {
 
     return cubeBB;
 }
+
+
+
+function createPlane(centerX, centerY, centerZ, x, z, local) {
+    const textureLoader = new THREE.TextureLoader();
+    var tile = textureLoader.load(local);
+
+    tile.wrapS = THREE.RepeatWrapping;
+    tile.wrapT = THREE.RepeatWrapping;
+
+    tile.repeat.set(x / 4, z / 4);
+
+    let planeGeometry = new THREE.PlaneGeometry(x, z);
+    let planeMaterial = new THREE.MeshLambertMaterial();
+    planeMaterial.map = tile;
+
+
+    let plane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+    plane.receiveShadow = true;
+
+    plane.position.set(centerX, centerY, centerZ)
+    plane.rotateX(-1.5708);
+    scene.add(plane);
+
+    let planeBB = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+    planeBB.setFromObject(plane);
+
+    return planeBB;
+}
+
+
+
+
+//=====================================================nivel 0===============================================================//
 let max = 52;
 
 createArch(52);
 createStairs(52);
 
-
-
-//=====================================================nivel 0===============================================================//
-for (var i = 0; i < max; i++) {
-    for (var j = 0; j < max; j++) {
-        colisions.push(createTile(i + ((max / 2) * -1), -0.5, j + ((max / 2) * -1), 0));
-    }
-}
+colisions.push(createPlane(-0.2, 0, 0, 51, 51, './assets/textures/tile5.jpg'));
 
 //wall bounds
 for (var i = 0; i < max; i++) {
@@ -386,16 +395,35 @@ for (var i = 0; i < max; i++) {
     if (!(i >= ((max / 2) - 2) && i < ((max / 2) + 3)))//porta
         colisions.push(createTile((max / 2) - 1, 0.5, i - (max / 2), 0));
 }
+let materialPorta0 = new THREE.MeshLambertMaterial({
+    color: "rgb(18,10,143)",
+    opacity: 0.5,
+    transparent: true
+});
+let materialPorta1 = new THREE.MeshLambertMaterial({
+    color: "rgb(255,255,0)",
+    opacity: 0.5,
+    transparent: true
+});
+let materialPorta2 = new THREE.MeshLambertMaterial({
+    color: "rgb(255,0,0)",
+    opacity: 0.5,
+    transparent: true
+});
 
-createPorta(5, 0.8, 0, 4.75, 25, groundMaterialGrey)//0
-createPorta(0.8, 5, -25.98, 4.75, 0, yellowMaterial)//1
-createPorta(0.8, 5, 25, 4.75, 0, groundMaterialRed)//2
+
+
+createPorta(5, 0.8, 0, 4.75, 25, materialPorta0)//0
+createPorta(0.8, 5, -25.98, 4.75, 0, materialPorta1)//1
+createPorta(0.8, 5, 25, 4.75, 0, materialPorta2)//2
 
 //portas dentro das areas
-createPorta(5, 0.8, 0, 4.75, 68, groundMaterialGrey)//3
-createPorta(0.8, 5, 79, 2.75, 0, groundMaterialRed)//4
+createPorta(5, 0.8, 0, 4.75, 68, materialPorta0)//3
+createPorta(0.8, 5, 79, 2.75, 0, materialPorta2)//4
 
 function createPorta(scaleX, scaleZ, x, y, z, material) {
+
+
     //criação das portas
     let porta_mesh = new THREE.BoxGeometry(scaleX, 9.5, scaleZ);
     let porta_trigger = new THREE.BoxGeometry(scaleX * 25, 9.5, scaleZ * 25);
@@ -426,11 +454,7 @@ function createPorta(scaleX, scaleZ, x, y, z, material) {
 //=====================================================nivel 1===============================================================//
 
 // plataform
-for (var i = 0; i < 26; i++) {
-    for (var j = 0; j < 38; j++) {
-        colisions.push(createTile(i - 11, -2.5, j - 68, 0, 1));
-    }
-}
+colisions.push(createPlane(1, -2, -49.25, 25, 38, './assets/textures/tile1.jpg'));
 
 //wals
 
@@ -513,12 +537,9 @@ for (var i = 0; i < 14; i++) {
 
 //=====================================================nivel 2===============================================================//
 
-//plataform
-for (var i = 0; i < 26; i++) {
-    for (var j = 0; j < 38; j++) {
-        colisions.push(createTile(i - 11, 1.5, j + 31, 0, 2));
-    }
-}
+
+// plataform
+colisions.push(createPlane(2, 2, 49.5, 25, 38, './assets/textures/tile3.jpg'));
 
 //obj
 
@@ -600,12 +621,9 @@ for (var i = 0; i < 14; i++) {
 
 //=====================================================nivel 3===============================================================//
 //plataform
+colisions.push(createPlane(55, -2, 1, 49, 24, './assets/textures/tile0.jpg'));
 
-for (var i = 0; i < 50; i++) {
-    for (var j = 0; j < 25; j++) {
-        colisions.push(createTile(i + 30, -2.5, j - 11, 0, 3));
-    }
-}
+
 //walls 
 
 for (var i = 0; i < 50; i++) {
@@ -720,7 +738,8 @@ for (var i = 0; i < 9; i++) {
 
 
 //=======================================================nivel final===========================================================//
-
+//plataform
+colisions.push(createPlane(-35.5, 2.01, 0, 10, 11, './assets/textures/tile2.jpg'));
 for (var i = 0; i < 10; i++) {
     for (var j = 0; j < 11; j++) {
         colisions.push(createTile(i - 40, 1.5, j - 5, 0, 4));
@@ -856,25 +875,24 @@ function checkCollisions() {
 
     for (var i = 0; i < colisions.length; i++) {
         if (colisions[i].intersectsBox(cube1BB)) { jump = true; }
-        if (colisions[i].intersectsBox(D1BB)) { offD = false; }
-        if (colisions[i].intersectsBox(S1BB)) { offS = false; }
-        if (colisions[i].intersectsBox(A1BB)) { offA = false; }
-        if (colisions[i].intersectsBox(W1BB)) { offW = false; }
+        if (colisions[i].intersectsBox(A1BB)) { offD = false; }
+        if (colisions[i].intersectsBox(W1BB)) { offS = false; }
+        if (colisions[i].intersectsBox(D1BB)) { offA = false; }
+        if (colisions[i].intersectsBox(S1BB)) { offW = false; }
         if (colisions[i].intersectsBox(G1BB)) { fall = fall + 1; }
     }
     for (var i = 0; i < door_collisions.length; i++) {
-        if (door_collisions[i].intersectsBox(D1BB)) { offD = false; }
-        if (door_collisions[i].intersectsBox(S1BB)) { offS = false; }
-        if (door_collisions[i].intersectsBox(A1BB)) { offA = false; }
-        if (door_collisions[i].intersectsBox(W1BB)) { offW = false; }
+        if (door_collisions[i].intersectsBox(A1BB)) { offD = false; }
+        if (door_collisions[i].intersectsBox(W1BB)) { offS = false; }
+        if (door_collisions[i].intersectsBox(D1BB)) { offA = false; }
+        if (door_collisions[i].intersectsBox(S1BB)) { offW = false; }
     }
     for (var i = 0; i < block_colisions.length; i++) {
-        if (block_colisions[i].intersectsBox(D1BB)) { offD = false; }
-        if (block_colisions[i].intersectsBox(S1BB)) { offS = false; }
-        if (block_colisions[i].intersectsBox(A1BB)) { offA = false; }
-        if (block_colisions[i].intersectsBox(W1BB)) { offW = false; }
+        if (block_colisions[i].intersectsBox(A1BB)) { offD = false; }
+        if (block_colisions[i].intersectsBox(W1BB)) { offS = false; }
+        if (block_colisions[i].intersectsBox(D1BB)) { offA = false; }
+        if (block_colisions[i].intersectsBox(S1BB)) { offW = false; }
     }
-    //console.log(fall);
 
     for (var i = 0; i < key_collisions.length; i++) {
         if (key_collisions[i].intersectsBox(D1BB) || key_collisions[i].intersectsBox(S1BB) || key_collisions[i].intersectsBox(A1BB)) {
@@ -953,7 +971,7 @@ function checkCollisions() {
     }
 
     if (fall < 1) {
-        if (characterBox.position.y < -1) {
+        if (characterBox.position.y < -2) {
             characterBox.position.set(0, 2, 0);
         }
         cair();
@@ -1468,6 +1486,26 @@ function spotlightscontrol() {
 
     }
 }
+
+
+//========================================================================================================//
+//=============================================efeitos sonoros=============================================//
+const audioLoader = new THREE.AudioLoader();
+
+
+const listener = new THREE.AudioListener();
+characterBox.add(listener);
+
+const backgroundSound = new THREE.Audio(listener);
+audioLoader.load('./assets/music/ambiente.mp3', function (buffer) {
+    backgroundSound.setBuffer(buffer);
+    backgroundSound.setLoop(true);
+    backgroundSound.setVolume(0.5);
+    backgroundSound.play();
+});
+
+
+//========================================================================================================//
 
 render();
 function render() {
