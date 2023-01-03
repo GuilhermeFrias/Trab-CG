@@ -917,7 +917,6 @@ function checkCollisions() {
                 const posTarget = new THREE.Vector3(0, -4.75, 25)
                 doors[0].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
-                    hasBlueKey = false;
                     door_collisions[0].translate(new THREE.Vector3(1000, 1000, 1000));
                     door_triggers[0].translate(new THREE.Vector3(1000, 1000, 1000));
                 }, 2000);
@@ -926,7 +925,6 @@ function checkCollisions() {
                 const posTarget = new THREE.Vector3(-25.98, -4.75, 0)
                 doors[1].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
-                    hasBlueKey = false;
                     door_collisions[1].translate(new THREE.Vector3(1000, 1000, 1000));
                     door_triggers[1].translate(new THREE.Vector3(1000, 1000, 1000));
                 }, 2000);
@@ -935,7 +933,6 @@ function checkCollisions() {
                 const posTarget = new THREE.Vector3(25, -4.75, 0)
                 doors[2].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
-                    hasBlueKey = false;
                     door_collisions[2].translate(new THREE.Vector3(1000, 1000, 1000));
                     door_triggers[2].translate(new THREE.Vector3(1000, 1000, 1000));
                 }, 2000);
@@ -947,7 +944,6 @@ function checkCollisions() {
                 const posTarget = new THREE.Vector3(0, -4.75, 68)
                 doors[3].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
-                    hasBlueKey = false;
                     door_collisions[3].translate(new THREE.Vector3(1000, 1000, 1000));
                     door_triggers[3].translate(new THREE.Vector3(1000, 1000, 1000));
                 }, 1200);
@@ -956,7 +952,6 @@ function checkCollisions() {
                 const posTarget = new THREE.Vector3(79, -6.75, 0)
                 doors[4].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
-                    hasBlueKey = false;
                     door_collisions[4].translate(new THREE.Vector3(1000, 1000, 1000));
                     door_triggers[4].translate(new THREE.Vector3(1000, 1000, 1000));
                 }, 2000);
@@ -1019,14 +1014,14 @@ function checkCollisions() {
     }
 
 
-    if (botoesAcionados[0] && botoesAcionados[1] && botoesAcionados[2]) {
+    if ((botoesAcionados[0] && botoesAcionados[1] && botoesAcionados[2]) || testOn) {
 
         puzzle1Completo = true;
     }
     else {
         puzzle1Completo = false;
     }
-    if (botoesAcionados[3] && botoesAcionados[4]) {
+    if (botoesAcionados[3] && botoesAcionados[4] || testOn) {
         puzzle2Completo = true;
     }
     else {
@@ -1217,6 +1212,20 @@ var degreeAtt = 0;
 var target = 0;
 
 //controles teclado 
+var testOn = false;
+
+function testMode() {
+    if (keyboard.down("T")) {
+
+        testOn = !testOn;
+        hasBlueKey = !hasBlueKey;
+        hasRedKey = !hasRedKey;
+        hasYellowKey = !hasYellowKey;
+        puzzle1Completo = !puzzle1Completo;
+        puzzle2Completo = !puzzle2Completo;
+
+    }
+}
 function keyboardUpdate() {
 
     keyboard.update();
@@ -1520,7 +1529,7 @@ function render() {
     checkCollisions();
     if (hasYellowKey && characterBox.position.y >= 3.25) {
 
-        endGame();
+        //endGame();
     }
 
     if (characterBox.position.x >= 23 && dirLight.intensity > 0) {
@@ -1538,6 +1547,7 @@ function render() {
         keyboardUpdate();
 
     }
+    testMode();
 
     spotlightscontrol();
     attcolisisionsMovables();
