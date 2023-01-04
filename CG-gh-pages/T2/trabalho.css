@@ -1,0 +1,81 @@
+body,
+html {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    overflow: hidden;
+}
+
+#keyCount1 {
+    position: fixed;
+    text-align: left;
+    bottom: 12px;
+    padding-left: 45px;
+    width: 100%;
+    font-size: 30px;
+    color: white;
+}
+
+#keyCount2 {
+    position: fixed;
+    text-align: left;
+    bottom: 12px;
+    padding-left: 136px;
+    width: 100%;
+    font-size: 30px;
+    color: white;
+}
+
+#keyCount3 {
+    position: fixed;
+    text-align: left;
+    bottom: 12px;
+    padding-left: 227px;
+    width: 100%;
+    font-size: 30px;
+    color: white;
+}
+
+#test {
+    position: fixed;
+    text-align: right;
+    bottom: 10px;
+    padding-right: 10px;
+    width: 98%;
+    font-size: 30px;
+    color: white;
+
+}
+
+#image1 {
+    position: fixed;
+    text-align: left;
+    bottom: 5px;
+    padding-left: 10px;
+    width: 95%;
+    font-size: 50px;
+    color: white;
+    display: inline;
+}
+
+#image2 {
+    position: fixed;
+    text-align: left;
+    bottom: 5px;
+    padding-left: 100px;
+    width: 95%;
+    font-size: 50px;
+    color: white;
+    display: inline;
+}
+
+#image3 {
+    position: fixed;
+    text-align: left;
+    bottom: 5px;
+    padding-left: 190px;
+    width: 95%;
+    font-size: 50px;
+    color: white;
+    display: inline;
+}

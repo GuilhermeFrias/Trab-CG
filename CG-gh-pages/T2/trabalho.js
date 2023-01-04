@@ -111,10 +111,10 @@ function endGame() {
         });
         const textMaterial = new THREE.MeshNormalMaterial();
         const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-        textMesh.position.x = -42;
+        textMesh.position.x = -31;
         textMesh.position.y = 8;
         textMesh.position.z = 5
-        textMesh.rotateY(.7854);
+        textMesh.rotateY(2.3562);
         scene.add(textMesh);
         textVisible = true;
 
@@ -1515,6 +1515,32 @@ audioLoader.load('./assets/music/ambiente.mp3', function (buffer) {
 
 
 //========================================================================================================//
+let img = document.createElement("img");
+img.src = "https://www.iconsdb.com/icons/preview/blue/key-6-xxl.png";
+document.body.appendChild(img);
+
+function updateKeys() {
+    if (hasBlueKey)
+        keyCount1.innerHTML = 'x' + 1;
+    else
+        keyCount1.innerHTML = 'x' + 0;
+    if (hasRedKey)
+        keyCount2.innerHTML = 'x' + 1;
+    else
+        keyCount2.innerHTML = 'x' + 0;
+    if (hasYellowKey)
+        keyCount3.innerHTML = 'x' + 1;
+    else
+        keyCount3.innerHTML = 'x' + 0;
+
+    if (testOn) {
+        test.innerHTML = 'Test Mode On'
+    }
+    else
+        test.innerHTML = 'Test Mode Off'
+
+}
+
 
 render();
 function render() {
@@ -1529,7 +1555,7 @@ function render() {
     checkCollisions();
     if (hasYellowKey && characterBox.position.y >= 3.25) {
 
-        //endGame();
+        endGame();
     }
 
     if (characterBox.position.x >= 23 && dirLight.intensity > 0) {
@@ -1548,6 +1574,7 @@ function render() {
 
     }
     testMode();
+    updateKeys();
 
     spotlightscontrol();
     attcolisisionsMovables();
