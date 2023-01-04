@@ -4,14 +4,14 @@ import { GLTFLoader } from '../build/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from '../build/jsm/loaders/OBJLoader.js';
 import {
     initRenderer,
+    getMaxSize,
     setDefaultMaterial,
-    createLightSphere,
-    createGroundPlaneWired,
+    getFilename,
 } from "../libs/util/util.js";
 import { CSG } from '../libs/other/CSGMesh.js'
 import { FontLoader } from '../build/jsm/loaders/FontLoader.js';
 import { TextGeometry } from '../build/jsm/geometries/TextGeometry.js';
-import { AudioLoader, Texture } from '../build/three.module.js';
+
 
 
 let spotlights = []
@@ -23,7 +23,15 @@ let buttonsObj = [];
 let buttons = [];
 let door_collisions = []
 let door_triggers = []
+var soundDoor0 = true;
+var soundDoor1 = true;
+var soundDoor2 = true;
 
+var soundDoorPuzzle0 = true;
+var soundDoorPuzzle1 = true;
+
+var apertadosPuzzle0 = 0;
+var apertadosPuzzle1 = 0;
 
 let scene, renderer, material;
 scene = new THREE.Scene();
@@ -35,6 +43,56 @@ material = setDefaultMaterial();
 var lightPosition = new THREE.Vector3(-30, 30, 30);
 
 var d = 100;
+
+
+function loadGLTFFile1(tipo, local) {
+
+    var loader = new GLTFLoader();
+    if (tipo == 1) {
+        loader.load('./assets/coisas/pedra/scene.gltf', (gltfScene) => {
+            gltfScene.scene.traverse(function (node) {
+
+                if (node.isMesh) { node.castShadow = true; }
+
+            });
+            gltfScene.scene.position.set(0, -0.3, 0);
+            gltfScene.scene.scale.set(0.6, 1.2, 1.4);
+
+            local.add(gltfScene.scene);
+        });
+    }
+    if (tipo == 2) {
+        loader.load('./assets/coisas/cristal/scene.gltf', (gltfScene) => {
+            gltfScene.scene.traverse(function (node) {
+
+                if (node.isMesh) { node.castShadow = true; }
+
+            });
+            gltfScene.scene.scale.set(1, 1, 1);
+            gltfScene.scene.position.set(0, -0.65, 0);
+
+            local.add(gltfScene.scene);
+        });
+    }
+    if (tipo == 3) {
+        loader.load('./assets/coisas/livros/scene.gltf', (gltfScene) => {
+            gltfScene.scene.traverse(function (node) {
+
+                if (node.isMesh) { node.castShadow = true; }
+
+            });
+            gltfScene.scene.position.set(0, -0.4, 0);
+            gltfScene.scene.scale.set(0.01, 0.01, 0.01);
+            local.add(gltfScene.scene);
+        });
+    }
+
+}
+
+
+
+
+
 
 var dirLight = new THREE.DirectionalLight("rgb(255,255,255)");
 dirLight.position.copy(lightPosition);
@@ -60,21 +118,25 @@ scene.add(dirLight);
 var keyboard = new KeyboardState();
 let clock = new THREE.Clock();
 
-let tileMaterial = setDefaultMaterial('rgb(223,195,156,255)');
-let tileMaterialSelected = setDefaultMaterial('rgb(246,2,150)');
-let groundMaterial = setDefaultMaterial('rgb(220,195,156,254)');
 
+let tileMaterial = new THREE.MeshLambertMaterial({
+    color: "rgb(223,195,156,255)",
+    opacity: 0.0,
+    transparent: true
+});
+
+let tileMaterialSelected = new THREE.MeshLambertMaterial({
+    color: "rgb(246,2,150)",
+    opacity: 0.0,
+    transparent: true
+});
 let groundMaterialRed = setDefaultMaterial(0xF12323);
-let groundMaterialGrey = setDefaultMaterial(0x45AFF);
-
-let yellowMaterial = setDefaultMaterial(0xFFE53F)
 
 let invisibleColor = 0xFFFFFF;
 
 let collisionMaterial = new THREE.MeshPhongMaterial({
     color: invisibleColor,
-    opacity: 0.0
-    ,
+    opacity: 0.0,
     transparent: true,
 });
 var man = null;
@@ -86,10 +148,7 @@ var hasBlueKey = false
 var hasRedKey = false
 var hasYellowKey = false
 
-//puzzle Controller
-var botoesAcionados = new Array(5).fill(false);
-var puzzle1Completo = false;
-var puzzle2Completo = false;
+
 
 let doors = []
 let keys = []
@@ -121,6 +180,12 @@ function endGame() {
     });
 
 }
+//puzzle Controller
+var botoesAcionados = new Array(5).fill(false);
+
+var puzzle1Completo = false;
+var puzzle2Completo = false;
+
 
 //========================================================================================================//
 //=========================================elementos do ambiente==========================================//
@@ -129,7 +194,7 @@ function endGame() {
 function createArch(size) {
 
     const textureLoader = new THREE.TextureLoader();
-    var stone = textureLoader.load('./assets/textures/wall.jpg');
+    var stone = textureLoader.load('./assets/textures/wall.png');
     let wallMaterial = new THREE.MeshLambertMaterial();
     wallMaterial.map = stone;
 
@@ -208,8 +273,8 @@ function createStairs(size) {
     guards(-3, 1, -28.4, 0);
     guards(3, 1, -28.4, 0);
 
-    guards(-28, 2, -3, 1.5708);
-    guards(-28, 2, 3, 1.5708);
+    guards(-28.5, 2, -3, 1.5708);
+    guards(-28.5, 2, 3, 1.5708);
     guards(28, 1, -3, 1.5708);
     guards(28, 1, 3, 1.5708);
 
@@ -283,7 +348,6 @@ function createStairs(size) {
 //=========================================CRIAÇÃO DO AMBIENTE============================================//
 //criação de tile
 let block = new THREE.BoxGeometry(1, 1, 1);
-let decoration = new THREE.BoxGeometry(0.9, 1.1, 0.9);
 function createButton(x, y, z) {
     let b = new THREE.BoxGeometry(1.7, 1.5, 1.7);
     let button = new THREE.Mesh(b, groundMaterialRed);
@@ -296,12 +360,21 @@ function createButton(x, y, z) {
 
 }
 
-function createTile(x, y, z, c, color) {
+function createTile(x, y, z, c, cor) {
     if (c == 0 || c == 2) {
         const textureLoader = new THREE.TextureLoader();
-        var stone = textureLoader.load('./assets/textures/wall.jpg');
+        if (cor == 0)
+            var wall = textureLoader.load('./assets/textures/wall.png');
+        else if (cor == 1)
+            var wall = textureLoader.load('./assets/textures/wallA.png');
+        else if (cor == 2)
+            var wall = textureLoader.load('./assets/textures/wallB.png');
+        else if (cor == 3)
+            var wall = textureLoader.load('./assets/textures/wallC.png');
+
+
         let wallMaterial = new THREE.MeshLambertMaterial();
-        wallMaterial.map = stone;
+        wallMaterial.map = wall;
 
         let tile = new THREE.Mesh(block, wallMaterial);
         tile.castShadow = true;
@@ -312,7 +385,7 @@ function createTile(x, y, z, c, color) {
         return setColision(tile)
     }
     else {
-        let tile = new THREE.Mesh(block, tileMaterial);
+        let tile = new THREE.Mesh(block, collisionMaterial);
         tile.position.set(x, y, z);
         scene.add(tile);
 
@@ -320,11 +393,22 @@ function createTile(x, y, z, c, color) {
     }
 }
 //adiciona os blocos criados a um vetor de colisoes
-
+var numberBlocks = 0;
 function createBlock(x, y, z) {
+    numberBlocks++;
     let interactable_block = new THREE.Mesh(block, tileMaterial);
     interactable_block.position.set(x, y, z);
-    interactable_block.castShadow = true
+    var textura;
+    if (numberBlocks <= 6)
+        textura = 1;
+    else if (numberBlocks <= 12)
+        textura = 2;
+    else
+        textura = 3;
+
+
+    loadGLTFFile1(textura, interactable_block);
+    interactable_block.castShadow = false;
     scene.add(interactable_block);
     return interactable_block;
 
@@ -376,25 +460,26 @@ let max = 52;
 createArch(52);
 createStairs(52);
 
-colisions.push(createPlane(-0.2, 0, 0, 51, 51, './assets/textures/tile5.jpg'));
+colisions.push(createPlane(-0.2, 0, 0, 51, 51, './assets/textures/tile5.png'));
 
 //wall bounds
 for (var i = 0; i < max; i++) {
     if (!(i >= ((max / 2) - 2) && i < ((max / 2) + 3)))//porta
-        colisions.push(createTile(i - (max / 2), 0.5, (max / 2) - 1, 0));
+        colisions.push(createTile(i - (max / 2), 0.5, (max / 2) - 1, 0, 0));
 }
 for (var i = 0; i < max; i++) {
     if (!(i >= ((max / 2) - 2) && i < ((max / 2) + 3)))//porta
-        colisions.push(createTile(i - (max / 2), 0.5, -1 * (max / 2), 0));
+        colisions.push(createTile(i - (max / 2), 0.5, -1 * (max / 2), 0, 0));
 }
 for (var i = 0; i < max; i++) {
     if (!(i >= ((max / 2) - 2) && i < ((max / 2) + 3)))//porta
-        colisions.push(createTile(-1 * max / 2, 0.5, i - (max / 2), 0));
+        colisions.push(createTile(-1 * max / 2, 0.5, i - (max / 2), 0, 0));
 }
 for (var i = 0; i < max; i++) {
     if (!(i >= ((max / 2) - 2) && i < ((max / 2) + 3)))//porta
-        colisions.push(createTile((max / 2) - 1, 0.5, i - (max / 2), 0));
+        colisions.push(createTile((max / 2) - 1, 0.5, i - (max / 2), 0, 0));
 }
+
 let materialPorta0 = new THREE.MeshLambertMaterial({
     color: "rgb(18,10,143)",
     opacity: 0.5,
@@ -454,30 +539,30 @@ function createPorta(scaleX, scaleZ, x, y, z, material) {
 //=====================================================nivel 1===============================================================//
 
 // plataform
-colisions.push(createPlane(1, -2, -49.25, 25, 38, './assets/textures/tile1.jpg'));
+colisions.push(createPlane(1, -2, -49.25, 25, 38.5, './assets/textures/tile1.png'));
 
 //wals
 
 for (var i = 0; i < 26; i++) {
-    if (!(i >= 9 && i <= 13))
-        colisions.push(createTile(i - 11, -1.5, -68, 0, 1));
+    if (!(i >= 10 && i <= 11))
+        colisions.push(createTile(i - 11, -1.5, -68, 0, 1, 1));
 }
 for (var i = 0; i < 26; i++) {
     if (!(i >= 9 && i <= 13))
-        colisions.push(createTile(i - 11, -1.5, -31, 0, 1));
+        colisions.push(createTile(i - 11, -1.5, -31, 0, 1, 1));
 }
 for (var i = 0; i < 38; i++) {
-    colisions.push(createTile(-11, -1.5, i - 68, 0, 1));
+    colisions.push(createTile(-11, -1.5, i - 68, 0, 1, 1));
 }
 for (var i = 0; i < 38; i++) {
-    colisions.push(createTile(14, -1.5, i - 68, 0, 1));
+    colisions.push(createTile(14, -1.5, i - 68, 0, 1, 1));
 }
 
 //obj
 
 for (var i = 0; i < 11; i++) {
     for (var j = 0; j < 14; j++) {
-        colisions.push(createTile(i - 5, -2.5, -84.8 + j, 0, 1));
+        colisions.push(createTile(i - 5, -2.5, -85 + j, 0, 1, 1));
     }
 }
 
@@ -518,14 +603,14 @@ block_colisions.push(cube5);
 var posicionados = new Array(6).fill(false)
 // wals
 for (var i = 0; i < 11; i++) {
-    colisions.push(createTile(i - 5, -1.5, -84.8, 0, 1));
+    colisions.push(createTile(i - 5, -1.5, -85, 0, 1));
 }
 for (var i = 0; i < 14; i++) {
-    colisions.push(createTile(-5, -1.5, -84.8 + i, 0, 1));
+    colisions.push(createTile(-5, -1.5, -85 + i, 0, 1));
 }
 
 for (var i = 0; i < 14; i++) {
-    colisions.push(createTile(5, -1.5, -84.8 + i, 0, 1));
+    colisions.push(createTile(5, -1.5, -85 + i, 0, 1));
 }
 
 
@@ -539,7 +624,7 @@ for (var i = 0; i < 14; i++) {
 
 
 // plataform
-colisions.push(createPlane(2, 2, 49.5, 25, 38, './assets/textures/tile3.jpg'));
+colisions.push(createPlane(2, 2, 49.5, 25, 38, './assets/textures/tile3.png'));
 
 //obj
 
@@ -621,7 +706,7 @@ for (var i = 0; i < 14; i++) {
 
 //=====================================================nivel 3===============================================================//
 //plataform
-colisions.push(createPlane(55, -2, 1, 49, 24, './assets/textures/tile0.jpg'));
+colisions.push(createPlane(55, -2, 1, 49, 24, './assets/textures/tile0.png'));
 
 
 //walls 
@@ -739,16 +824,10 @@ for (var i = 0; i < 9; i++) {
 
 //=======================================================nivel final===========================================================//
 //plataform
-colisions.push(createPlane(-35.5, 2.01, 0, 10, 11, './assets/textures/tile2.jpg'));
-for (var i = 0; i < 10; i++) {
-    for (var j = 0; j < 11; j++) {
-        colisions.push(createTile(i - 40, 1.5, j - 5, 0, 4));
-    }
-}
-
+colisions.push(createPlane(-35.5, 2.01, 0, 11, 11, './assets/textures/tile2.png'));
 for (var i = 0; i < 2; i++) {
     for (var j = 0; j < 2; j++) {
-        colisions.push(createTile(i - 36, 1.75, j - 1, 0, 2))
+        colisions.push(createTile(i - 36, 1.75, j - 1, 0, 3))
     }
 }
 
@@ -820,7 +899,7 @@ cameraHolder2.rotateX(-0.79);
 
 //========================================================================================================//
 //*******************************Sistema de Colisão e Seleção de Objetsos******************************** */
-let collisionGeometry = new THREE.BoxGeometry(0.1, 0.2, 0.5);
+let collisionGeometry = new THREE.BoxGeometry(0.3, 0.2, 0.5);
 let collisionGeometryGravity = new THREE.BoxGeometry(0.001, 2.3, 0.001);
 
 
@@ -893,6 +972,7 @@ function checkCollisions() {
         if (block_colisions[i].intersectsBox(D1BB)) { offA = false; }
         if (block_colisions[i].intersectsBox(S1BB)) { offW = false; }
     }
+    //console.log(fall);
 
     for (var i = 0; i < key_collisions.length; i++) {
         if (key_collisions[i].intersectsBox(D1BB) || key_collisions[i].intersectsBox(S1BB) || key_collisions[i].intersectsBox(A1BB)) {
@@ -914,6 +994,11 @@ function checkCollisions() {
     for (var i = 0; i < door_triggers.length; i++) {
         if (door_triggers[i].intersectsBox(D1BB) || door_triggers[i].intersectsBox(S1BB) || door_triggers[i].intersectsBox(A1BB)) {
             if (i == 0 && hasBlueKey) {
+                if (soundDoor0 == true) {
+                    soundDoor0 = false;
+                    doorSound();
+                }
+
                 const posTarget = new THREE.Vector3(0, -4.75, 25)
                 doors[0].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
@@ -922,6 +1007,12 @@ function checkCollisions() {
                 }, 2000);
             }
             if (i == 1 && hasYellowKey) {
+                if (soundDoor1 == true) {
+                    soundDoor1 = false;
+                    doorSound();
+                }
+
+
                 const posTarget = new THREE.Vector3(-25.98, -4.75, 0)
                 doors[1].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
@@ -930,8 +1021,13 @@ function checkCollisions() {
                 }, 2000);
             }
             if (i == 2 && hasRedKey) {
+                if (soundDoor2 == true) {
+                    soundDoor2 = false;
+                    doorSound();
+                }
                 const posTarget = new THREE.Vector3(25, -4.75, 0)
                 doors[2].position.lerp(posTarget, 0.1)
+
                 setTimeout(() => {
                     door_collisions[2].translate(new THREE.Vector3(1000, 1000, 1000));
                     door_triggers[2].translate(new THREE.Vector3(1000, 1000, 1000));
@@ -941,6 +1037,11 @@ function checkCollisions() {
             //*************************************************************************** */
             //AQUI ESTAO AS PORTAS DO PUZZLE, A PORTA DE ID 3 É A DO PUZZLE AZUL E A COM ID 4 É DO PUZZLE VERMELHO
             if (i == 3 && puzzle1Completo) {
+                if (soundDoorPuzzle0 == true) {
+                    soundDoorPuzzle0 = false;
+                    doorSound();
+                }
+
                 const posTarget = new THREE.Vector3(0, -4.75, 68)
                 doors[3].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
@@ -949,6 +1050,10 @@ function checkCollisions() {
                 }, 1200);
             }
             if (i == 4 && puzzle2Completo) {
+                if (soundDoorPuzzle1 == true) {
+                    soundDoorPuzzle1 = false;
+                    doorSound();
+                }
                 const posTarget = new THREE.Vector3(79, -6.75, 0)
                 doors[4].position.lerp(posTarget, 0.1)
                 setTimeout(() => {
@@ -966,7 +1071,7 @@ function checkCollisions() {
     }
 
     if (fall < 1) {
-        if (characterBox.position.y < -1.5) {
+        if (characterBox.position.y < -1) {
             characterBox.position.set(0, 2, 0);
         }
         cair();
@@ -976,7 +1081,6 @@ function checkCollisions() {
     for (var i = 0; i < 5; i++) {
         botoesAcionados[i] = false;
     }
-
     for (var i = 0; i < 5; i++) {
         for (var j = 0; j < 14; j++)
 
@@ -986,7 +1090,6 @@ function checkCollisions() {
             }
 
     }
-
     for (var i = 0; i < 5; i++) {
         if (i <= 2) {
             if (botoesAcionados[i] && (buttonsObj[i].position.y > 1.5)) {
@@ -999,7 +1102,6 @@ function checkCollisions() {
             }
         }
     }
-
     for (var i = 0; i < 5; i++) {
         if (i <= 2) {
             if ((botoesAcionados[i] == false) && (buttonsObj[i].position.y < 1.8)) {
@@ -1011,6 +1113,16 @@ function checkCollisions() {
                 buttonsObj[i].translateY(0.1);
             }
         }
+    }
+
+    if (botoesAcionados[0] + botoesAcionados[1] + botoesAcionados[2] > apertadosPuzzle0) {
+        apertadosPuzzle0 = botoesAcionados[0] + botoesAcionados[1] + botoesAcionados[2];
+        buttonSound();
+    }
+
+    if (botoesAcionados[3] + botoesAcionados[4] > apertadosPuzzle1) {
+        apertadosPuzzle1 = botoesAcionados[3] + botoesAcionados[4];
+        buttonSound();
     }
 
 
@@ -1029,6 +1141,9 @@ function checkCollisions() {
     }
 
 }
+
+
+
 
 function cair() {
     characterBox.translateY(-0.2);
@@ -1049,7 +1164,7 @@ console.log(v)
 function createBridge(x, z, index) {
     posicionados[index] = true
     objeto_carregado.position.set(x, -2.5, z)
-    objeto_carregado.material = groundMaterial
+    objeto_carregado.material = collisionMaterial
     colisions.push(setColision(objeto_carregado))
 }
 
@@ -1085,22 +1200,28 @@ window.addEventListener('click', Event => {
             //verifica ponte
             if ((Math.round(v.x) < 3 || Math.round(v.x) > -3) && Math.round(v.z) > -72) {
                 if (Math.round(v.z) == -69 && !posicionados[0]) {
-                    createBridge(0, -68.8, 0)
+                    createBridge(0, -69, 0)
+                    thumpSound()
                 }
                 else if (Math.round(v.z) == -69 && !posicionados[1]) {
-                    createBridge(-1, -68.8, 1)
+                    createBridge(-1, -69, 1)
+                    thumpSound()
                 }
                 else if (Math.round(v.z) == -70 && !posicionados[2]) {
-                    createBridge(0, -69.8, 2)
+                    createBridge(0, -70, 2)
+                    thumpSound()
                 }
                 else if (Math.round(v.z) == -70 && !posicionados[3]) {
-                    createBridge(-1, -69.8, 3)
+                    createBridge(-1, -70, 3)
+                    thumpSound()
                 }
                 else if (Math.round(v.z) == -71 && !posicionados[4]) {
-                    createBridge(0, -70.8, 4)
+                    createBridge(0, -71, 4)
+                    thumpSound()
                 }
                 else if (Math.round(v.z) == -71 && !posicionados[5]) {
-                    createBridge(-1, -70.8, 5)
+                    createBridge(-1, -71, 5)
+                    thumpSound()
                 }
                 else
                     objeto_carregado.position.set(Math.round(v.x), Math.round(v.y) - 1.5, Math.round(v.z))
@@ -1365,7 +1486,6 @@ function attcolisisionsMovables() {
         block_colisions[i].copy(blocks[i].geometry.boundingBox).applyMatrix4(blocks[i].matrixWorld);
 }
 
-
 function spotlightscontrol() {
 
     buttonsObj[3].visible = false;
@@ -1499,22 +1619,113 @@ function spotlightscontrol() {
 
 //========================================================================================================//
 //=============================================efeitos sonoros=============================================//
+
 const audioLoader = new THREE.AudioLoader();
-
-
 const listener = new THREE.AudioListener();
 characterBox.add(listener);
-
 const backgroundSound = new THREE.Audio(listener);
 audioLoader.load('./assets/music/ambiente.mp3', function (buffer) {
     backgroundSound.setBuffer(buffer);
     backgroundSound.setLoop(true);
-    backgroundSound.setVolume(0.5);
+    backgroundSound.setVolume(0.05);
     backgroundSound.play();
 });
 
+function thumpSound() {
+    const audioLoaderthump = new THREE.AudioLoader();
+    const listenerthump = new THREE.AudioListener();
+    characterBox.add(listenerthump);
+    const thumpSound = new THREE.Audio(listenerthump);
+    audioLoaderthump.load('./assets/music/thump.wav', function (buffer) {
+        thumpSound.setBuffer(buffer);
+        thumpSound.setVolume(1);
+        thumpSound.play();
+    });
+}
+
+function doorSound() {
+    const audioLoaderdoor = new THREE.AudioLoader();
+    const listenerdoor = new THREE.AudioListener();
+    characterBox.add(listenerdoor);
+    const doorSound = new THREE.Audio(listenerdoor);
+    audioLoaderdoor.load('./assets/music/door.mp3', function (buffer) {
+        doorSound.setBuffer(buffer);
+        doorSound.setVolume(0.5);
+        doorSound.play();
+    });
+}
+
+
+
+
+function completSound() {
+    const audioLoadercomplet = new THREE.AudioLoader();
+    const listenercomplet = new THREE.AudioListener();
+    characterBox.add(listenercomplet);
+    const completSound = new THREE.Audio(listenercomplet);
+    audioLoadercomplet.load('./assets/music/complete.wav', function (buffer) {
+        completSound.setBuffer(buffer);
+        completSound.setVolume(1);
+        completSound.play();
+    });
+}
+
+function buttonSound() {
+    const audioLoaderbutton = new THREE.AudioLoader();
+    const listenerbutton = new THREE.AudioListener();
+    characterBox.add(listenerbutton);
+    const buttonSound = new THREE.Audio(listenerbutton);
+    audioLoaderbutton.load('./assets/music/button.wav', function (buffer) {
+        buttonSound.setBuffer(buffer);
+        buttonSound.setVolume(1);
+        buttonSound.play();
+    });
+}
+
+function keySound() {
+    const audioLoaderkey = new THREE.AudioLoader();
+    const listenerkey = new THREE.AudioListener();
+    characterBox.add(listenerkey);
+    const keySound = new THREE.Audio(listenerkey);
+    audioLoaderkey.load('./assets/music/key.mp3', function (buffer) {
+        keySound.setBuffer(buffer);
+        keySound.setVolume(1);
+        keySound.play();
+    });
+}
+
+var coletada0 = false;
+var coletada1 = false;
+var coletada2 = false;
+
+function SFX() {
+
+
+
+
+    if (hasBlueKey == true && coletada0 == false) {
+        coletada0 = true;
+        keySound();
+    }
+
+    if (hasRedKey == true && coletada1 == false) {
+        coletada1 = true;
+        keySound();
+    }
+
+    if (hasYellowKey == true && coletada2 == false) {
+        coletada2 = true;
+        keySound();
+    }
+
+}
+
+
+
+
 
 //========================================================================================================//
+
 let img = document.createElement("img");
 img.src = "https://www.iconsdb.com/icons/preview/blue/key-6-xxl.png";
 document.body.appendChild(img);
@@ -1573,6 +1784,7 @@ function render() {
         keyboardUpdate();
 
     }
+    SFX();
     testMode();
     updateKeys();
 

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Crystal
+* source:	https://sketchfab.com/3d-models/crystal-336c8e3bf73c47269cf58368882d2e94
+* author:	Myranda (https://sketchfab.com/Myranda_gau)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Crystal" (https://sketchfab.com/3d-models/crystal-336c8e3bf73c47269cf58368882d2e94) by Myranda (https://sketchfab.com/Myranda_gau) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)

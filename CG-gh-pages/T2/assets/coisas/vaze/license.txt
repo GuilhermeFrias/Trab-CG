@@ -1,0 +1,11 @@
+Model Information:
+* title:	Ancient Vase
+* source:	https://sketchfab.com/3d-models/ancient-vase-dce37778ec964299bba5aeca736bf70e
+* author:	AO-INTERACTIVE (https://sketchfab.com/aointeractive)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Ancient Vase" (https://sketchfab.com/3d-models/ancient-vase-dce37778ec964299bba5aeca736bf70e) by AO-INTERACTIVE (https://sketchfab.com/aointeractive) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
